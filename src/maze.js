@@ -11,6 +11,7 @@ class Maze {
     this.createCells();
     this.current = this.cells[Math.floor(Math.random() * this.cells.length)];
     this.current.visited = true;
+    this.stack = [];
     this.draw();
   }
 
@@ -77,10 +78,14 @@ class Maze {
     if (next) {
       next.visited = true;
 
+      this.stack.push(this.current);
+
       this.current.removeWalls(next);
 
 
       this.current = next;
+    } else if (this.stack.length > 0) {
+      this.current = this.stack.pop();
     }
   }
 
