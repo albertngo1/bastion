@@ -1,33 +1,17 @@
-const Cell = require('./cell.js');
+const GenerateDFS = require('./generate/dfs.js');
 
 class Maze {
 
   constructor(canvas) {
     this.w = canvas.width;
     this.h = canvas.height;
-    this.len = 20;
+    this.len = 100;
     this.ctx = canvas.getContext('2d');
     this.cells = [];
-    this.createCells();
-    this.current = this.cells[Math.floor(Math.random() * this.cells.length)];
-    this.current.visited = true;
-    this.stack = [];
-    this.draw();
-  }
 
-  createCells() {
-    const rows = this.h / this.len;
-    const cols = this.w / this.len;
-    let x;
-    let y;
+    this.generating = true;
 
-    for (let i=0; i < rows; i++) {
-      for (let j=0; j < cols; j++) {
-        x = (j * this.len)
-        y = (i * this.len)
-        this.cells.push(new Cell(x, y, this.len));
-      }
-    }
+    this.generator = new GenerateDFS(this);
   }
 
   adjacentCells(cell) {
@@ -69,36 +53,23 @@ class Maze {
   }
 
   draw() {
-    this.ctx.clearRect(0, 0, this.w, this.h);
-    this.cells.forEach( cell => {
-      cell.draw(this.ctx);
-    });
-
-    const next = this.adjacentCells(this.current);
-    if (next) {
-      next.visited = true;
-
-      this.stack.push(this.current);
-
-      this.current.removeWalls(next);
-
-
-      this.current = next;
-    } else if (this.stack.length > 0) {
-      this.current = this.stack.pop();
+    if (this.generator) {
+      this.generator.draw(this.ctx);
     }
   }
 
-  animateDFS() {
+  begin() {
     requestAnimationFrame(this.animate.bind(this));
   }
 
   animate() {
-    const frameRate = 1000;
-    setTimeout(() => {
-      requestAnimationFrame(this.animate.bind(this));
-      this.draw();
-    }, 1000 / frameRate)
+    if (this.generating) {
+      const frameRate = 1000;
+      setTimeout(() => {
+        requestAnimationFrame(this.animate.bind(this));
+        this.draw();
+      }, 1000 / frameRate)
+    }
   }
 }
 

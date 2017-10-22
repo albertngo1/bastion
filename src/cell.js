@@ -1,4 +1,3 @@
-
 class Cell {
 
   constructor(x, y, len) {
@@ -14,7 +13,7 @@ class Cell {
 
     let x = this.x - other.x;
     let y = this.y - other.y;
-    
+
     if (x < 0) {
       this.walls[1] = false;
       other.walls[3] = false;
@@ -64,7 +63,7 @@ class Cell {
     }
 
     if (this.visited) {
-      ctx.fillStyle = "orange";
+      ctx.fillStyle = "pink";
       ctx.fillRect(x, y, this.len, this.len);
     }
   }
