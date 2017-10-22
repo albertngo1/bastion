@@ -9,6 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   canvas.width = 500;
   canvas.height = 500;
 
-  const maze = new Maze(canvas);
+  const maze = new Maze(canvas).animateDFS();
 
 })

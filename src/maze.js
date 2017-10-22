@@ -5,18 +5,13 @@ class Maze {
   constructor(canvas) {
     this.w = canvas.width;
     this.h = canvas.height;
-    this.len = 100;
+    this.len = 20;
     this.ctx = canvas.getContext('2d');
     this.cells = [];
     this.createCells();
-    this.selectStart();
-    this.neighbors = this.adjacentCells(this.start)
+    this.current = this.cells[Math.floor(Math.random() * this.cells.length)];
+    this.current.visited = true;
     this.draw();
-  }
-
-  selectStart() {
-    const cell = this.cells[Math.floor(Math.random() * this.cells.length)];
-    this.start = cell;
   }
 
   createCells() {
@@ -35,6 +30,15 @@ class Maze {
   }
 
   adjacentCells(cell) {
+    const inBounds = () => {
+        if (this.x < 0 || this.x > this.w || this.y < 0 || this.y > this.h) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+
+
     let neighbors = [];
     let x;
     let y;
@@ -44,11 +48,13 @@ class Maze {
       x = cell.x + add[i][0];
       y = cell.y + add[i][1];
       let neighborCell = this.findCell(x, y);
-      if (this.inBounds() && neighborCell) {
+      if (inBounds() && neighborCell && !neighborCell.visited) {
         neighbors.push(neighborCell);
       }
     }
-    return neighbors;
+    if (neighbors.length > 0) {
+      return neighbors[Math.floor(Math.random() * neighbors.length)];
+    }
   }
 
   findCell(x, y) {
@@ -61,25 +67,33 @@ class Maze {
     return null;
   }
 
-  inBounds() {
-    if (this.x < 0 || this.x > this.w || this.y < 0 || this.y > this.h) {
-      return false;
-    } else {
-      return true;
+  draw() {
+    this.ctx.clearRect(0, 0, this.w, this.h);
+    this.cells.forEach( cell => {
+      cell.draw(this.ctx);
+    });
+
+    const next = this.adjacentCells(this.current);
+    if (next) {
+      next.visited = true;
+
+      this.current.removeWalls(next);
+
+
+      this.current = next;
     }
   }
 
-  draw() {
-    this.cells.forEach( cell => {
-      cell.draw(this.ctx);
-    })
+  animateDFS() {
+    requestAnimationFrame(this.animate.bind(this));
+  }
 
-    this.neighbors.forEach( cell => {
-      const x = cell.x;
-      const y = cell.y;
-      this.ctx.fillStyle = "yellow";
-      this.ctx.fillRect(x, y, cell.len, cell.len);
-    })
+  animate() {
+    const frameRate = 1000;
+    setTimeout(() => {
+      requestAnimationFrame(this.animate.bind(this));
+      this.draw();
+    }, 1000 / frameRate)
   }
 }
 
