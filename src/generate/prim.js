@@ -85,7 +85,6 @@ class GeneratePrim {
   }
 
   algorithm() {
-    console.log("sdknf")
     if (this.frontier.length > 0) {
 
       const index = Math.floor(Math.random() * this.frontier.length);

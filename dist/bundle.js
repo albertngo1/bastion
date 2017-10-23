@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/dist";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -173,29 +173,6 @@ module.exports = Cell;
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var EventHandle = __webpack_require__(7);
-
-document.addEventListener("DOMContentLoaded", function () {
-
-  var canvas = document.getElementById("canvas");
-  var ctx = canvas.getContext('2d');
-
-  canvas.width = 500;
-  canvas.height = 500;
-
-  ctx.fillStyle = 'black';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  EventHandle(ctx, canvas);
-});
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -341,7 +318,7 @@ var GenerateDFS = function () {
 module.exports = GenerateDFS;
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -449,7 +426,7 @@ module.exports = GenerateSidewinder;
 // }
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -553,7 +530,6 @@ var GeneratePrim = function () {
   }, {
     key: "algorithm",
     value: function algorithm() {
-      console.log("sdknf");
       if (this.frontier.length > 0) {
 
         var index = Math.floor(Math.random() * this.frontier.length);
@@ -611,7 +587,7 @@ var GeneratePrim = function () {
 module.exports = GeneratePrim;
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -622,7 +598,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Cell = __webpack_require__(0);
-var Tree = __webpack_require__(8);
+var Tree = __webpack_require__(7);
 
 var GenerateKruskal = function () {
   function GenerateKruskal(maze) {
@@ -742,26 +718,40 @@ var GenerateKruskal = function () {
 module.exports = GenerateKruskal;
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(1);
-__webpack_require__(1);
-(function webpackMissingModule() { throw new Error("Cannot find module \"bundle.js\""); }());
-
-
-/***/ }),
-/* 7 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var GenerateDFS = __webpack_require__(2);
-var GenerateSidewinder = __webpack_require__(3);
-var GeneratePrim = __webpack_require__(4);
-var GenerateKruskal = __webpack_require__(5);
-var Maze = __webpack_require__(9);
+var EventHandle = __webpack_require__(6);
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  var canvas = document.getElementById("canvas");
+  var ctx = canvas.getContext('2d');
+
+  canvas.width = 500;
+  canvas.height = 500;
+
+  ctx.fillStyle = 'black';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  EventHandle(ctx, canvas);
+});
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var GenerateDFS = __webpack_require__(1);
+var GenerateSidewinder = __webpack_require__(2);
+var GeneratePrim = __webpack_require__(3);
+var GenerateKruskal = __webpack_require__(4);
+var Maze = __webpack_require__(8);
 
 var eventHandle = function eventHandle(ctx, canvas) {
 
@@ -813,7 +803,7 @@ var eventHandle = function eventHandle(ctx, canvas) {
 module.exports = eventHandle;
 
 /***/ }),
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -853,7 +843,7 @@ var Tree = function () {
 module.exports = Tree;
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -863,10 +853,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var GenerateDFS = __webpack_require__(2);
-var GenerateSidewinder = __webpack_require__(3);
-var GeneratePrim = __webpack_require__(4);
-var GenerateKruskal = __webpack_require__(5);
+var GenerateDFS = __webpack_require__(1);
+var GenerateSidewinder = __webpack_require__(2);
+var GeneratePrim = __webpack_require__(3);
+var GenerateKruskal = __webpack_require__(4);
 
 var Maze = function () {
   function Maze(canvas) {
