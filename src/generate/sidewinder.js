@@ -10,9 +10,6 @@ class GenerateSidewinder {
 
     this.currentIdx = {x: 0, y: 0}
     this.runStart = 0;
-
-    // this.algorithm();
-
   }
 
   createCells(maze) {
@@ -39,7 +36,7 @@ class GenerateSidewinder {
       this.currentIdx.x = 0;
       this.currentIdx.y += 1;
       if (this.currentIdx.y === height) {
-        return;
+        return this.generating = false;
       }
     }
     let x = this.currentIdx.x;
@@ -54,6 +51,7 @@ class GenerateSidewinder {
     } else if (x + 1 < width) {
       maze.cells[y][x].removeWalls(maze.cells[y][x + 1]);
     }
+    maze.cells[y][x].visited = true;
     this.currentIdx.x += 1;
 
     // let runStart;
@@ -84,6 +82,7 @@ class GenerateSidewinder {
     if (this.currentIdx.y < maze.cells.length) {
       this.algorithm();
     }
+    ctx.strokeRect(0, 0, maze.w, maze.h);
   }
 
 

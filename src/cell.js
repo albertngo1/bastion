@@ -66,7 +66,7 @@ class Cell {
       ctx.fillStyle = "pink";
       ctx.fillRect(x, y, this.len, this.len);
     } else {
-      ctx.fillStyle = "grey";
+      ctx.fillStyle = "black";
       ctx.fillRect(x, y, this.len, this.len);
     }
   }
