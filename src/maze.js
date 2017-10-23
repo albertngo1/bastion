@@ -27,7 +27,7 @@ class Maze {
 
   animate() {
     if (this.generating) {
-      const frameRate = 1;
+      const frameRate = 100;
       setTimeout(() => {
         requestAnimationFrame(this.animate.bind(this));
         this.draw();
