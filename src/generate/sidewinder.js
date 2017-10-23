@@ -36,7 +36,7 @@ class GenerateSidewinder {
       this.currentIdx.x = 0;
       this.currentIdx.y += 1;
       if (this.currentIdx.y === height) {
-        return this.generating = false;
+        return this.maze.generating = false;
       }
     }
     let x = this.currentIdx.x;

@@ -6,8 +6,6 @@ class GenerateKruskal {
   constructor(maze) {
 
     this.N = "N";
-    this.S = "S";
-    this.E = "E";
     this.W = "W";
     this.DX = {
       "E": maze.len,
@@ -20,12 +18,6 @@ class GenerateKruskal {
       "N": -maze.len,
       "W": 0,
       "E": 0,
-    }
-    this.OPPOSITE = {
-      "S": "N",
-      "N": "S",
-      "W": "E",
-      "E": "W",
     }
 
     this.maze = maze;
@@ -82,22 +74,24 @@ class GenerateKruskal {
         set1.connect(set2);
 
         if (dir === "N") {
-          this.grid[y/ l][x/ l].walls[0] = false;
-          this.grid[ny/ l][nx/ l].walls[2] = false;
+          this.grid[y / l][x / l].walls[0] = false;
+          this.grid[ny / l][nx / l].walls[2] = false;
         } else if (dir === "S") {
-          this.grid[y / l][x/ l].walls[2] = false;
-          this.grid[ny / l][nx/ l].walls[0] = false;
+          this.grid[y / l][x / l].walls[2] = false;
+          this.grid[ny / l][nx / l].walls[0] = false;
         } else if (dir === "E") {
-          this.grid[y / l][x/ l].walls[1] = false;
-          this.grid[ny / l][nx/ l].walls[3] = false;
+          this.grid[y / l][x / l].walls[1] = false;
+          this.grid[ny / l][nx / l].walls[3] = false;
         } else {
-          this.grid[y / l][x/ l].walls[3] = false;
-          this.grid[ny / l][nx/ l].walls[1] = false;
+          this.grid[y / l][x / l].walls[3] = false;
+          this.grid[ny / l][nx / l].walls[1] = false;
         }
 
       }
       this.grid[y / l][x/ l].visited = true;
       this.grid[ny / l][nx/ l].visited = true;
+    } else {
+      this.maze.generating = false;
     }
   }
 

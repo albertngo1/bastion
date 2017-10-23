@@ -1,5 +1,6 @@
 const GenerateDFS = require('./generate/dfs.js');
 const GenerateSidewinder = require('./generate/sidewinder.js');
+const GeneratePrim = require('./generate/prim.js');
 const GenerateKruskal = require('./generate//kruskal/kruskal.js');
 
 class Maze {
@@ -14,7 +15,8 @@ class Maze {
 
     this.generating = true;
 
-    this.generator = new GenerateKruskal(this);
+    // this.generator = new GenerateKruskal(this);
+    this.generator = new GeneratePrim(this);
     // this.generator = new GenerateDFS(this);
     // this.generator = new GenerateSidewinder(this);
   }
