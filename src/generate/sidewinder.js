@@ -53,6 +53,26 @@ class GenerateSidewinder {
     }
     maze.cells[y][x].visited = true;
     this.currentIdx.x += 1;
+  }
+
+  draw(ctx) {
+    const maze = this.maze;
+    if (this.currentIdx.y < maze.cells.length) {
+      this.algorithm();
+    }
+    maze.cells.forEach( row => {
+      row.forEach( cell => {
+        cell.draw(ctx);
+      });
+    });
+    ctx.strokeRect(0, 0, maze.w, maze.h);
+  }
+
+
+}
+
+module.exports = GenerateSidewinder;
+
 
     // let runStart;
     // let cell;
@@ -69,23 +89,3 @@ class GenerateSidewinder {
     //     }
     //   }
     // }
-  }
-
-  draw(ctx) {
-    const maze = this.maze;
-    ctx.clearRect(0, 0, maze.w, maze.h);
-    maze.cells.forEach( row => {
-      row.forEach( cell => {
-        cell.draw(ctx);
-      });
-    });
-    if (this.currentIdx.y < maze.cells.length) {
-      this.algorithm();
-    }
-    ctx.strokeRect(0, 0, maze.w, maze.h);
-  }
-
-
-}
-
-module.exports = GenerateSidewinder;

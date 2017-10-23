@@ -86,13 +86,34 @@ class GenerateDFS {
     }
   }
 
+  fastAlgo() {
+    const maze = this.maze;
+    while (true) {
+      const next = this.adjacentCells(maze.current);
+      if (next) {
+        next.visited = true;
+        maze.stack.push(maze.current);
+        maze.current.removeWalls(next);
+        maze.current = next;
+      } else if (maze.stack.length > 0) {
+        maze.current = maze.stack.pop();
+        if (maze.start === maze.current) {
+          maze.generating = false;
+          return;
+        }
+      }
+    }
+  }
+
   draw(ctx) {
     const maze = this.maze;
-    ctx.clearRect(0, 0, maze.w, maze.h);
+    this.algorithm();
     maze.cells.forEach( cell => {
       cell.draw(ctx);
     });
-    this.algorithm();
+    if (maze.generating) {
+      maze.current.highlight(ctx);
+    }
     ctx.strokeRect(0, 0, maze.w, maze.h);
   }
 

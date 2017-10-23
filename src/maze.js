@@ -16,8 +16,8 @@ class Maze {
     this.generating = true;
 
     // this.generator = new GenerateKruskal(this);
-    this.generator = new GeneratePrim(this);
-    // this.generator = new GenerateDFS(this);
+    // this.generator = new GeneratePrim(this);
+    this.generator = new GenerateDFS(this);
     // this.generator = new GenerateSidewinder(this);
   }
 

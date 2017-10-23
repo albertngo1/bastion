@@ -126,7 +126,6 @@ class GeneratePrim {
 
   draw(ctx) {
     const maze = this.maze;
-    ctx.clearRect(0, 0, maze.w, maze.h);
     this.algorithm();
     this.grid.forEach( row => {
       row.forEach( cell => {
