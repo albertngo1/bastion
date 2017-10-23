@@ -1,6 +1,6 @@
 const GenerateDFS = require('./generate/dfs.js');
 const GenerateSidewinder = require('./generate/sidewinder.js');
-const GenerateKruskal = require('./generate/kruskal.js');
+const GenerateKruskal = require('./generate//kruskal/kruskal.js');
 
 class Maze {
 
