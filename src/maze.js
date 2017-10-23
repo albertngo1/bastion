@@ -15,10 +15,7 @@ class Maze {
 
     this.generating = true;
 
-    // this.generator = new GenerateKruskal(this);
-    // this.generator = new GeneratePrim(this);
-    this.generator = new GenerateDFS(this);
-    // this.generator = new GenerateSidewinder(this);
+    this.generator;
   }
 
   draw() {
@@ -37,6 +34,8 @@ class Maze {
         requestAnimationFrame(this.animate.bind(this));
         this.draw();
       }, 1000 / this.frameRate)
+    } else {
+      $("button").prop("disabled", false);
     }
   }
 }

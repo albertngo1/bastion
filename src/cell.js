@@ -36,6 +36,7 @@ class Cell {
     const x = this.x
     const y = this.y
     ctx.strokeStyle = "black";
+    ctx.lineWidth = 2;
 
     if (this.walls[0]) {
       ctx.beginPath();

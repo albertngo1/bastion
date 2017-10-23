@@ -1,5 +1,4 @@
-const Maze = require('./maze.js');
-
+const EventHandle = require('./event_handle.js');
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -9,6 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
   canvas.width = 500;
   canvas.height = 500;
 
-  const maze = new Maze(canvas).begin();
+  ctx.fillStyle = 'black';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  EventHandle(ctx, canvas);
 
 })

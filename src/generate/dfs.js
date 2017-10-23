@@ -107,7 +107,11 @@ class GenerateDFS {
 
   draw(ctx) {
     const maze = this.maze;
-    this.algorithm();
+    if (this.fast === true) {
+      this.fastAlgo();
+    } else {
+      this.algorithm();
+    }
     maze.cells.forEach( cell => {
       cell.draw(ctx);
     });
