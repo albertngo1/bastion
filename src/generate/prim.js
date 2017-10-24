@@ -7,12 +7,12 @@ class GeneratePrim {
 
     this.frontier = [];
 
-    this.grid = [];
+    maze.cells = [];
 
     this.createCells(maze);
 
-    const row = this.grid.length;
-    const cols = this.grid[0].length;
+    const row = maze.cells.length;
+    const cols = maze.cells[0].length;
     this.mark(Math.floor(Math.random() * cols), Math.floor(Math.random() * row));
   }
 
@@ -23,26 +23,28 @@ class GeneratePrim {
     let y;
 
     for (let i=0; i < rows; i++) {
-      this.grid[i] = [];
+      maze.cells[i] = [];
       for (let j=0; j < cols; j++) {
         x = (j * maze.len)
         y = (i * maze.len)
-        this.grid[i].push(new Cell(x, y, maze.len));
-        this.grid[i][j].frontier = false;
-        this.grid[i][j].in = false;
+        maze.cells[i].push(new Cell(x, y, maze.len));
+        maze.cells[i][j].frontier = false;
+        maze.cells[i][j].in = false;
       }
     }
   }
 
   addFrontier(x, y) {
-    if (x >= 0 && y >= 0 && x < this.grid[0].length && y < this.grid.length && this.grid[y][x].frontier === false && this.grid[y][x].in === false) {
-      this.grid[y][x].frontier = true;
+    const maze = this.maze;
+    if (x >= 0 && y >= 0 && x < maze.cells[0].length && y < maze.cells.length && maze.cells[y][x].frontier === false && maze.cells[y][x].in === false) {
+      maze.cells[y][x].frontier = true;
       this.frontier.push([x, y])
     }
   }
 
   mark(x, y) {
-    this.grid[y][x].in = true;
+    const maze = this.maze;
+    maze.cells[y][x].in = true;
     this.addFrontier(x + 1, y);
     this.addFrontier(x - 1, y);
     this.addFrontier(x, y + 1);
@@ -65,18 +67,19 @@ class GeneratePrim {
   }
 
   neighbors(x, y) {
+    const maze = this.maze;
     let neighbors = [];
 
-    if (x > 0 && this.grid[y][x-1].in) {
+    if (x > 0 && maze.cells[y][x-1].in) {
       neighbors.push([x - 1, y]);
     };
-    if (x + 1 < this.grid[0].length && this.grid[y][x+1].in) {
+    if (x + 1 < maze.cells[0].length && maze.cells[y][x+1].in) {
       neighbors.push([x + 1, y]);
     };
-    if (y > 0 && this.grid[y - 1][x].in) {
+    if (y > 0 && maze.cells[y - 1][x].in) {
       neighbors.push([x, y - 1]);
     };
-    if (y + 1 < this.grid.length && this.grid[y + 1][x].in) {
+    if (y + 1 < maze.cells.length && maze.cells[y + 1][x].in) {
       neighbors.push([x, y + 1]);
     };
 
@@ -85,6 +88,7 @@ class GeneratePrim {
   }
 
   algorithm() {
+    const maze = this.maze;
     if (this.frontier.length > 0) {
 
       const index = Math.floor(Math.random() * this.frontier.length);
@@ -102,20 +106,20 @@ class GeneratePrim {
       const dir = this.direction(x, y, nx, ny);
 
       if (dir === "N") {
-        this.grid[y][x].walls[0] = false;
-        this.grid[ny][nx].walls[2] = false;
+        maze.cells[y][x].walls[0] = false;
+        maze.cells[ny][nx].walls[2] = false;
       } else if (dir === "S") {
-        this.grid[y][x].walls[2] = false;
-        this.grid[ny][nx].walls[0] = false;
+        maze.cells[y][x].walls[2] = false;
+        maze.cells[ny][nx].walls[0] = false;
       } else if (dir === "E") {
-        this.grid[y][x].walls[1] = false;
-        this.grid[ny][nx].walls[3] = false;
+        maze.cells[y][x].walls[1] = false;
+        maze.cells[ny][nx].walls[3] = false;
       } else {
-        this.grid[y][x].walls[3] = false;
-        this.grid[ny][nx].walls[1] = false;
+        maze.cells[y][x].walls[3] = false;
+        maze.cells[ny][nx].walls[1] = false;
       }
-      this.grid[y][x].visited = true;
-      this.grid[ny][nx].visited = true;
+      maze.cells[y][x].visited = true;
+      maze.cells[ny][nx].visited = true;
 
       this.mark(x, y)
     } else {
@@ -126,7 +130,7 @@ class GeneratePrim {
   draw(ctx) {
     const maze = this.maze;
     this.algorithm();
-    this.grid.forEach( row => {
+    maze.cells.forEach( row => {
       row.forEach( cell => {
         cell.draw(ctx);
       });

@@ -6,8 +6,8 @@ class SolveDFS {
     this.maze = maze;
 
 
-    this.start = maze.cells[0];
-    this.finish = maze.cells[maze.cells.length - 1];
+    this.start = maze.cells[0][0];
+    this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
   }
 
   adjacentCells(cell) {

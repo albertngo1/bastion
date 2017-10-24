@@ -29,13 +29,13 @@ class GenerateKruskal {
 
   createGridAndSet() {
     const maze = this.maze;
-    this.grid = [];
+    maze.cells = [];
     this.sets = [];
     for (let y=0; y < maze.w / maze.len; y++) {
-      this.grid[y] = [];
+      maze.cells[y] = [];
       this.sets[y] = [];
       for (let x=0; x < maze.h / maze.len; x++) {
-        this.grid[y].push(new Cell(x * maze.len, y * maze.len, maze.len));
+        maze.cells[y].push(new Cell(x * maze.len, y * maze.len, maze.len));
         this.sets[y].push(new Tree());
       }
     }
@@ -57,6 +57,7 @@ class GenerateKruskal {
   }
 
   algorithm() {
+    const maze = this.maze;
     if (this.edges.length > 0) {
       let poppedEdge = this.edges.pop();
       let x = poppedEdge[0];
@@ -74,22 +75,22 @@ class GenerateKruskal {
         set1.connect(set2);
 
         if (dir === "N") {
-          this.grid[y / l][x / l].walls[0] = false;
-          this.grid[ny / l][nx / l].walls[2] = false;
+          maze.cells[y / l][x / l].walls[0] = false;
+          maze.cells[ny / l][nx / l].walls[2] = false;
         } else if (dir === "S") {
-          this.grid[y / l][x / l].walls[2] = false;
-          this.grid[ny / l][nx / l].walls[0] = false;
+          maze.cells[y / l][x / l].walls[2] = false;
+          maze.cells[ny / l][nx / l].walls[0] = false;
         } else if (dir === "E") {
-          this.grid[y / l][x / l].walls[1] = false;
-          this.grid[ny / l][nx / l].walls[3] = false;
+          maze.cells[y / l][x / l].walls[1] = false;
+          maze.cells[ny / l][nx / l].walls[3] = false;
         } else {
-          this.grid[y / l][x / l].walls[3] = false;
-          this.grid[ny / l][nx / l].walls[1] = false;
+          maze.cells[y / l][x / l].walls[3] = false;
+          maze.cells[ny / l][nx / l].walls[1] = false;
         }
 
       }
-      this.grid[y / l][x/ l].visited = true;
-      this.grid[ny / l][nx/ l].visited = true;
+      maze.cells[y / l][x/ l].visited = true;
+      maze.cells[ny / l][nx/ l].visited = true;
     } else {
       this.maze.generating = false;
     }
@@ -98,7 +99,7 @@ class GenerateKruskal {
   draw(ctx) {
     const maze = this.maze;
     this.algorithm();
-    this.grid.forEach( row => {
+    maze.cells.forEach( row => {
       row.forEach( cell => {
         cell.draw(ctx);
       });

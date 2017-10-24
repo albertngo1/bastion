@@ -4,11 +4,12 @@ class GenerateDFS {
 
   constructor(maze) {
     this.maze = maze;
-    maze.cells = [];
+    this.grid = [];
 
     this.createCells(maze);
-
-    maze.current = maze.cells[Math.floor(Math.random() * maze.cells.length)];
+    const y = Math.floor(Math.random() * this.grid.length)
+    const x = Math.floor(Math.random() * this.grid[0].length)
+    maze.current = this.grid[y][x];
     maze.current.visited = true;
     maze.stack = [];
     maze.start = maze.current;
@@ -20,12 +21,12 @@ class GenerateDFS {
     const cols = maze.w / maze.len;
     let x;
     let y;
-
     for (let i=0; i < rows; i++) {
+      this.grid[i] = [];
       for (let j=0; j < cols; j++) {
         x = (j * maze.len)
         y = (i * maze.len)
-        maze.cells.push(new Cell(x, y, maze.len));
+        this.grid[i].push(new Cell(x, y, maze.len));
       }
     }
   }
@@ -61,10 +62,12 @@ class GenerateDFS {
 
   findCell(x, y) {
     const maze = this.maze
-    for (let i=0; i < maze.cells.length; i++) {
-      let cell = maze.cells[i];
-      if (cell.x === x && cell.y === y) {
-        return cell;
+    for (let i=0; i < this.grid.length; i++) {
+      for (let j=0; j < this.grid[0].length; j++) {
+        let cell = this.grid[i][j];
+        if (cell.x === x && cell.y === y) {
+          return cell;
+        }
       }
     }
     return null;
@@ -112,8 +115,10 @@ class GenerateDFS {
     } else {
       this.algorithm();
     }
-    maze.cells.forEach( cell => {
-      cell.draw(ctx);
+    this.grid.forEach( row => {
+      row.forEach( cell => {
+        cell.draw(ctx);
+      })
     });
     if (maze.generating) {
       maze.current.highlight(ctx);

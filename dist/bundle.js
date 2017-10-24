@@ -57,7 +57,7 @@
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/dist";
+/******/ 	__webpack_require__.p = "/dist/";
 /******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 1);
@@ -220,7 +220,7 @@ var GenerateDFS = __webpack_require__(3);
 var GenerateSidewinder = __webpack_require__(4);
 var GeneratePrim = __webpack_require__(5);
 var GenerateKruskal = __webpack_require__(6);
-var SolveDFS = __webpack_require__(10);
+var SolveDFS = __webpack_require__(8);
 var Maze = __webpack_require__(9);
 
 var eventHandle = function eventHandle(ctx, canvas) {
@@ -303,11 +303,12 @@ var GenerateDFS = function () {
     _classCallCheck(this, GenerateDFS);
 
     this.maze = maze;
-    maze.cells = [];
+    this.grid = [];
 
     this.createCells(maze);
-
-    maze.current = maze.cells[Math.floor(Math.random() * maze.cells.length)];
+    var y = Math.floor(Math.random() * this.grid.length);
+    var x = Math.floor(Math.random() * this.grid[0].length);
+    maze.current = this.grid[y][x];
     maze.current.visited = true;
     maze.stack = [];
     maze.start = maze.current;
@@ -320,12 +321,12 @@ var GenerateDFS = function () {
       var cols = maze.w / maze.len;
       var x = void 0;
       var y = void 0;
-
       for (var i = 0; i < rows; i++) {
+        this.grid[i] = [];
         for (var j = 0; j < cols; j++) {
           x = j * maze.len;
           y = i * maze.len;
-          maze.cells.push(new Cell(x, y, maze.len));
+          this.grid[i].push(new Cell(x, y, maze.len));
         }
       }
     }
@@ -362,10 +363,12 @@ var GenerateDFS = function () {
     key: 'findCell',
     value: function findCell(x, y) {
       var maze = this.maze;
-      for (var i = 0; i < maze.cells.length; i++) {
-        var cell = maze.cells[i];
-        if (cell.x === x && cell.y === y) {
-          return cell;
+      for (var i = 0; i < this.grid.length; i++) {
+        for (var j = 0; j < this.grid[0].length; j++) {
+          var cell = this.grid[i][j];
+          if (cell.x === x && cell.y === y) {
+            return cell;
+          }
         }
       }
       return null;
@@ -416,8 +419,10 @@ var GenerateDFS = function () {
       } else {
         this.algorithm();
       }
-      maze.cells.forEach(function (cell) {
-        cell.draw(ctx);
+      this.grid.forEach(function (row) {
+        row.forEach(function (cell) {
+          cell.draw(ctx);
+        });
       });
       if (maze.generating) {
         maze.current.highlight(ctx);
@@ -560,12 +565,12 @@ var GeneratePrim = function () {
 
     this.frontier = [];
 
-    this.grid = [];
+    maze.cells = [];
 
     this.createCells(maze);
 
-    var row = this.grid.length;
-    var cols = this.grid[0].length;
+    var row = maze.cells.length;
+    var cols = maze.cells[0].length;
     this.mark(Math.floor(Math.random() * cols), Math.floor(Math.random() * row));
   }
 
@@ -578,28 +583,30 @@ var GeneratePrim = function () {
       var y = void 0;
 
       for (var i = 0; i < rows; i++) {
-        this.grid[i] = [];
+        maze.cells[i] = [];
         for (var j = 0; j < cols; j++) {
           x = j * maze.len;
           y = i * maze.len;
-          this.grid[i].push(new Cell(x, y, maze.len));
-          this.grid[i][j].frontier = false;
-          this.grid[i][j].in = false;
+          maze.cells[i].push(new Cell(x, y, maze.len));
+          maze.cells[i][j].frontier = false;
+          maze.cells[i][j].in = false;
         }
       }
     }
   }, {
     key: "addFrontier",
     value: function addFrontier(x, y) {
-      if (x >= 0 && y >= 0 && x < this.grid[0].length && y < this.grid.length && this.grid[y][x].frontier === false && this.grid[y][x].in === false) {
-        this.grid[y][x].frontier = true;
+      var maze = this.maze;
+      if (x >= 0 && y >= 0 && x < maze.cells[0].length && y < maze.cells.length && maze.cells[y][x].frontier === false && maze.cells[y][x].in === false) {
+        maze.cells[y][x].frontier = true;
         this.frontier.push([x, y]);
       }
     }
   }, {
     key: "mark",
     value: function mark(x, y) {
-      this.grid[y][x].in = true;
+      var maze = this.maze;
+      maze.cells[y][x].in = true;
       this.addFrontier(x + 1, y);
       this.addFrontier(x - 1, y);
       this.addFrontier(x, y + 1);
@@ -624,18 +631,19 @@ var GeneratePrim = function () {
   }, {
     key: "neighbors",
     value: function neighbors(x, y) {
+      var maze = this.maze;
       var neighbors = [];
 
-      if (x > 0 && this.grid[y][x - 1].in) {
+      if (x > 0 && maze.cells[y][x - 1].in) {
         neighbors.push([x - 1, y]);
       };
-      if (x + 1 < this.grid[0].length && this.grid[y][x + 1].in) {
+      if (x + 1 < maze.cells[0].length && maze.cells[y][x + 1].in) {
         neighbors.push([x + 1, y]);
       };
-      if (y > 0 && this.grid[y - 1][x].in) {
+      if (y > 0 && maze.cells[y - 1][x].in) {
         neighbors.push([x, y - 1]);
       };
-      if (y + 1 < this.grid.length && this.grid[y + 1][x].in) {
+      if (y + 1 < maze.cells.length && maze.cells[y + 1][x].in) {
         neighbors.push([x, y + 1]);
       };
 
@@ -644,6 +652,7 @@ var GeneratePrim = function () {
   }, {
     key: "algorithm",
     value: function algorithm() {
+      var maze = this.maze;
       if (this.frontier.length > 0) {
 
         var index = Math.floor(Math.random() * this.frontier.length);
@@ -661,20 +670,20 @@ var GeneratePrim = function () {
         var dir = this.direction(x, y, nx, ny);
 
         if (dir === "N") {
-          this.grid[y][x].walls[0] = false;
-          this.grid[ny][nx].walls[2] = false;
+          maze.cells[y][x].walls[0] = false;
+          maze.cells[ny][nx].walls[2] = false;
         } else if (dir === "S") {
-          this.grid[y][x].walls[2] = false;
-          this.grid[ny][nx].walls[0] = false;
+          maze.cells[y][x].walls[2] = false;
+          maze.cells[ny][nx].walls[0] = false;
         } else if (dir === "E") {
-          this.grid[y][x].walls[1] = false;
-          this.grid[ny][nx].walls[3] = false;
+          maze.cells[y][x].walls[1] = false;
+          maze.cells[ny][nx].walls[3] = false;
         } else {
-          this.grid[y][x].walls[3] = false;
-          this.grid[ny][nx].walls[1] = false;
+          maze.cells[y][x].walls[3] = false;
+          maze.cells[ny][nx].walls[1] = false;
         }
-        this.grid[y][x].visited = true;
-        this.grid[ny][nx].visited = true;
+        maze.cells[y][x].visited = true;
+        maze.cells[ny][nx].visited = true;
 
         this.mark(x, y);
       } else {
@@ -686,7 +695,7 @@ var GeneratePrim = function () {
     value: function draw(ctx) {
       var maze = this.maze;
       this.algorithm();
-      this.grid.forEach(function (row) {
+      maze.cells.forEach(function (row) {
         row.forEach(function (cell) {
           cell.draw(ctx);
         });
@@ -744,13 +753,13 @@ var GenerateKruskal = function () {
     key: 'createGridAndSet',
     value: function createGridAndSet() {
       var maze = this.maze;
-      this.grid = [];
+      maze.cells = [];
       this.sets = [];
       for (var y = 0; y < maze.w / maze.len; y++) {
-        this.grid[y] = [];
+        maze.cells[y] = [];
         this.sets[y] = [];
         for (var x = 0; x < maze.h / maze.len; x++) {
-          this.grid[y].push(new Cell(x * maze.len, y * maze.len, maze.len));
+          maze.cells[y].push(new Cell(x * maze.len, y * maze.len, maze.len));
           this.sets[y].push(new Tree());
         }
       }
@@ -776,6 +785,7 @@ var GenerateKruskal = function () {
   }, {
     key: 'algorithm',
     value: function algorithm() {
+      var maze = this.maze;
       if (this.edges.length > 0) {
         var poppedEdge = this.edges.pop();
         var x = poppedEdge[0];
@@ -793,21 +803,21 @@ var GenerateKruskal = function () {
           set1.connect(set2);
 
           if (dir === "N") {
-            this.grid[y / l][x / l].walls[0] = false;
-            this.grid[ny / l][nx / l].walls[2] = false;
+            maze.cells[y / l][x / l].walls[0] = false;
+            maze.cells[ny / l][nx / l].walls[2] = false;
           } else if (dir === "S") {
-            this.grid[y / l][x / l].walls[2] = false;
-            this.grid[ny / l][nx / l].walls[0] = false;
+            maze.cells[y / l][x / l].walls[2] = false;
+            maze.cells[ny / l][nx / l].walls[0] = false;
           } else if (dir === "E") {
-            this.grid[y / l][x / l].walls[1] = false;
-            this.grid[ny / l][nx / l].walls[3] = false;
+            maze.cells[y / l][x / l].walls[1] = false;
+            maze.cells[ny / l][nx / l].walls[3] = false;
           } else {
-            this.grid[y / l][x / l].walls[3] = false;
-            this.grid[ny / l][nx / l].walls[1] = false;
+            maze.cells[y / l][x / l].walls[3] = false;
+            maze.cells[ny / l][nx / l].walls[1] = false;
           }
         }
-        this.grid[y / l][x / l].visited = true;
-        this.grid[ny / l][nx / l].visited = true;
+        maze.cells[y / l][x / l].visited = true;
+        maze.cells[ny / l][nx / l].visited = true;
       } else {
         this.maze.generating = false;
       }
@@ -817,7 +827,7 @@ var GenerateKruskal = function () {
     value: function draw(ctx) {
       var maze = this.maze;
       this.algorithm();
-      this.grid.forEach(function (row) {
+      maze.cells.forEach(function (row) {
         row.forEach(function (cell) {
           cell.draw(ctx);
         });
@@ -872,7 +882,100 @@ var Tree = function () {
 module.exports = Tree;
 
 /***/ }),
-/* 8 */,
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var SolveDFS = function () {
+  function SolveDFS(maze) {
+    _classCallCheck(this, SolveDFS);
+
+    this.maze = maze;
+
+    this.start = maze.cells[0][0];
+    this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
+  }
+
+  _createClass(SolveDFS, [{
+    key: "adjacentCells",
+    value: function adjacentCells(cell) {
+      var maze = this.maze;
+      var inBounds = function inBounds() {
+        if (maze.x < 0 || maze.x > maze.w || maze.y < 0 || maze.y > maze.h) {
+          return false;
+        } else {
+          return true;
+        }
+      };
+
+      var neighbors = [];
+      var x = void 0;
+      var y = void 0;
+      var add = [[-maze.len, 0], [maze.len, 0], [0, maze.len], [0, -maze.len]];
+
+      for (var i = 0; i < add.length; i++) {
+        x = cell.x + add[i][0];
+        y = cell.y + add[i][1];
+        var neighborCell = this.findCell(x, y);
+        if (inBounds() && neighborCell && !neighborCell.visited) {
+          neighbors.push(neighborCell);
+        }
+      }
+      if (neighbors.length > 0) {
+        return neighbors[Math.floor(Math.random() * neighbors.length)];
+      }
+    }
+  }, {
+    key: "findCell",
+    value: function findCell(x, y) {
+      var maze = this.maze;
+      for (var i = 0; i < maze.cells.length; i++) {
+        var cell = maze.cells[i];
+        if (cell.x === x && cell.y === y) {
+          return cell;
+        }
+      }
+      return null;
+    }
+  }, {
+    key: "algorithm",
+    value: function algorithm() {
+      var maze = this.maze;
+      var next = this.adjacentCells(maze.current);
+      if (next) {
+        next.visited = true;
+        maze.stack.push(maze.current);
+        maze.current.removeWalls(next);
+        maze.current = next;
+      } else if (maze.stack.length > 0) {
+        maze.current = maze.stack.pop();
+        if (maze.start === maze.current) {
+          maze.generating = false;
+        }
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw(ctx) {
+      var maze = this.maze;
+      // this.algorithm();
+      this.start.highlightStart(ctx);
+      this.finish.highlightEnd(ctx);
+    }
+  }]);
+
+  return SolveDFS;
+}();
+
+module.exports = SolveDFS;
+
+/***/ }),
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -953,100 +1056,6 @@ var Maze = function () {
 }();
 
 module.exports = Maze;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var SolveDFS = function () {
-  function SolveDFS(maze) {
-    _classCallCheck(this, SolveDFS);
-
-    this.maze = maze;
-
-    this.start = maze.cells[0];
-    this.finish = maze.cells[maze.cells.length - 1];
-  }
-
-  _createClass(SolveDFS, [{
-    key: "adjacentCells",
-    value: function adjacentCells(cell) {
-      var maze = this.maze;
-      var inBounds = function inBounds() {
-        if (maze.x < 0 || maze.x > maze.w || maze.y < 0 || maze.y > maze.h) {
-          return false;
-        } else {
-          return true;
-        }
-      };
-
-      var neighbors = [];
-      var x = void 0;
-      var y = void 0;
-      var add = [[-maze.len, 0], [maze.len, 0], [0, maze.len], [0, -maze.len]];
-
-      for (var i = 0; i < add.length; i++) {
-        x = cell.x + add[i][0];
-        y = cell.y + add[i][1];
-        var neighborCell = this.findCell(x, y);
-        if (inBounds() && neighborCell && !neighborCell.visited) {
-          neighbors.push(neighborCell);
-        }
-      }
-      if (neighbors.length > 0) {
-        return neighbors[Math.floor(Math.random() * neighbors.length)];
-      }
-    }
-  }, {
-    key: "findCell",
-    value: function findCell(x, y) {
-      var maze = this.maze;
-      for (var i = 0; i < maze.cells.length; i++) {
-        var cell = maze.cells[i];
-        if (cell.x === x && cell.y === y) {
-          return cell;
-        }
-      }
-      return null;
-    }
-  }, {
-    key: "algorithm",
-    value: function algorithm() {
-      var maze = this.maze;
-      var next = this.adjacentCells(maze.current);
-      if (next) {
-        next.visited = true;
-        maze.stack.push(maze.current);
-        maze.current.removeWalls(next);
-        maze.current = next;
-      } else if (maze.stack.length > 0) {
-        maze.current = maze.stack.pop();
-        if (maze.start === maze.current) {
-          maze.generating = false;
-        }
-      }
-    }
-  }, {
-    key: "draw",
-    value: function draw(ctx) {
-      var maze = this.maze;
-      // this.algorithm();
-      this.start.highlightStart(ctx);
-      this.finish.highlightEnd(ctx);
-    }
-  }]);
-
-  return SolveDFS;
-}();
-
-module.exports = SolveDFS;
 
 /***/ })
 /******/ ]);
