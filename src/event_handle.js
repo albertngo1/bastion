@@ -18,7 +18,6 @@ const eventHandle = (ctx, canvas) => {
     maezr.solved = false;
     maezr.solving = false;
     maezr.generating = true;
-    console.log(maezr.solver)
   }
 
   $("#instant-gen").click(() => {
