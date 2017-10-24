@@ -9,12 +9,14 @@ const Maze = require('./maze.js');
 
 const eventHandle = (ctx, canvas) => {
 
-  let maezr;
+  let maezr = new Maze(canvas);
 
   function eventHelper() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     $("button").prop("disabled", true);
-    maezr = new Maze(canvas);
+    if (maezr) {
+      maezr = new Maze(canvas);
+    }
     maezr.solver = null;
     maezr.solved = false;
     maezr.solving = false;
@@ -58,17 +60,21 @@ const eventHandle = (ctx, canvas) => {
   });
 
   $("#dfs-solve").click(() => {
-    $("button").prop("disabled", true);
-    let solve = new SolveDFS(maezr);
-    maezr.solver = solve;
-    maezr.solving = true;
+    if (maezr.generator && !maezr.solved) {
+      $("button").prop("disabled", true);
+      let solve = new SolveDFS(maezr);
+      maezr.solver = solve;
+      maezr.solving = true;
+    }
   });
 
   $("#bfs-solve").click(() => {
-    $("button").prop("disabled", true);
-    let solve = new SolveBFS(maezr);
-    maezr.solver = solve;
-    maezr.solving = true;
+    if (maezr.generator && !maezr.solved) {
+      $("button").prop("disabled", true);
+      let solve = new SolveBFS(maezr);
+      maezr.solver = solve;
+      maezr.solving = true;
+    }
   });
 
 

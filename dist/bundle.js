@@ -232,12 +232,14 @@ var Maze = __webpack_require__(9);
 
 var eventHandle = function eventHandle(ctx, canvas) {
 
-  var maezr = void 0;
+  var maezr = new Maze(canvas);
 
   function eventHelper() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     $("button").prop("disabled", true);
-    maezr = new Maze(canvas);
+    if (maezr) {
+      maezr = new Maze(canvas);
+    }
     maezr.solver = null;
     maezr.solved = false;
     maezr.solving = false;
@@ -281,17 +283,21 @@ var eventHandle = function eventHandle(ctx, canvas) {
   });
 
   $("#dfs-solve").click(function () {
-    $("button").prop("disabled", true);
-    var solve = new SolveDFS(maezr);
-    maezr.solver = solve;
-    maezr.solving = true;
+    if (maezr.generator && !maezr.solved) {
+      $("button").prop("disabled", true);
+      var solve = new SolveDFS(maezr);
+      maezr.solver = solve;
+      maezr.solving = true;
+    }
   });
 
   $("#bfs-solve").click(function () {
-    $("button").prop("disabled", true);
-    var solve = new SolveBFS(maezr);
-    maezr.solver = solve;
-    maezr.solving = true;
+    if (maezr.generator && !maezr.solved) {
+      $("button").prop("disabled", true);
+      var solve = new SolveBFS(maezr);
+      maezr.solver = solve;
+      maezr.solving = true;
+    }
   });
 };
 
@@ -994,6 +1000,7 @@ var SolveDFS = function () {
         this.stack.pop().path = true;
       } else {
         this.maze.solving = false;
+        this.maze.solved = true;
       }
     }
   }, {
@@ -1042,11 +1049,12 @@ var Maze = function () {
 
     this.frameRate = 1000;
 
-    this.generating;
-    this.solving = false;
-
     this.generator;
+    this.generating;
+
     this.solver;
+    this.solving = false;
+    this.solved = false;
   }
 
   _createClass(Maze, [{
@@ -1205,6 +1213,7 @@ var SolveBFS = function () {
         this.queue.pop().path = true;
       } else {
         this.maze.solving = false;
+        this.maze.solved = true;
       }
     }
   }, {

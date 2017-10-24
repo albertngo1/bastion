@@ -85,6 +85,7 @@ class SolveBFS {
       this.queue.pop().path = true;
     } else {
       this.maze.solving = false;
+      this.maze.solved = true;
     }
   }
 

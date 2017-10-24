@@ -8,11 +8,12 @@ class Maze {
 
     this.frameRate = 1000;
 
-    this.generating;
-    this.solving = false;
-
     this.generator;
+    this.generating;
+
     this.solver;
+    this.solving = false;
+    this.solved = false;
   }
 
   draw() {
