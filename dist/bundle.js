@@ -1358,7 +1358,7 @@ var SolveAStar = function () {
                 return;
               }
               neighbors[i].g = this.current.g + Math.sqrt(Math.pow(neighbors[i].x - this.current.x, 2) + (neighbors[i].y - this.current.y, 2));
-              neighbors[i].h = Math.sqrt(Math.pow(neighbors[i].x - this.finish.x, 2) + (neighbors[i].y - this.finish.y, 2));
+              neighbors[i].h = Math.abs(neighbors[i].x - this.finish.x) + Math.abs(neighbors[i].y - this.finish.y);
               neighbors[i].f = neighbors[i].g + neighbors[i].h;
               var openListCell = this.neighborExist(neighbors[i], this.open);
               var closedListCell = this.neighborExist(neighbors[i], this.closed);
@@ -1373,6 +1373,9 @@ var SolveAStar = function () {
             }
           }
         }
+      } else {
+        this.maze.solving = false;
+        this.maze.solved = true;
       }
     }
   }, {
@@ -1389,18 +1392,25 @@ var SolveAStar = function () {
   }, {
     key: "path",
     value: function path() {
-      // if (this.stack.length > 0) {
-      //   this.stack.pop().path = true;
-      // } else {
-      //   this.maze.solving = false;
-      //   this.maze.solved = true;
-      // }
+      if (this.pathfinder === this.start) {
+        this.maze.solving = false;
+        this.maze.solved = true;
+      } else if (!this.pathfinder) {
+        this.pathfinder = this.finish.parent;
+      } else {
+        this.pathfinder.path = true;
+        this.pathfinder = this.pathfinder.parent;
+      }
     }
   }, {
     key: "draw",
     value: function draw(ctx) {
       var maze = this.maze;
-      this.algorithm();
+      if (this.current === this.finish) {
+        this.path();
+      } else {
+        this.algorithm();
+      }
       maze.cells.forEach(function (row) {
         row.forEach(function (cell) {
           cell.draw(ctx);
@@ -1409,9 +1419,6 @@ var SolveAStar = function () {
       this.current.highlight(ctx);
       this.start.highlightStart(ctx);
       this.finish.highlightEnd(ctx);
-      if (this.current === this.finish) {
-        this.path();
-      }
     }
   }]);
 

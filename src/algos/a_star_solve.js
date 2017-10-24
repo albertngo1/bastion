@@ -83,7 +83,7 @@ class SolveAStar {
               return;
             }
             neighbors[i].g = this.current.g + Math.sqrt(Math.pow(neighbors[i].x - this.current.x, 2) + (neighbors[i].y - this.current.y, 2));
-            neighbors[i].h = Math.sqrt(Math.pow(neighbors[i].x - this.finish.x, 2) + (neighbors[i].y - this.finish.y, 2));
+            neighbors[i].h = Math.abs(neighbors[i].x - this.finish.x) + Math.abs(neighbors[i].y - this.finish.y);
             neighbors[i].f = neighbors[i].g + neighbors[i].h;
             const openListCell = this.neighborExist(neighbors[i], this.open);
             const closedListCell = this.neighborExist(neighbors[i], this.closed);
@@ -102,6 +102,9 @@ class SolveAStar {
           }
         }
       }
+    } else {
+      this.maze.solving = false;
+      this.maze.solved = true;
     }
   }
   neighborExist(neighbor, list) {
@@ -115,17 +118,24 @@ class SolveAStar {
   }
 
   path() {
-    // if (this.stack.length > 0) {
-    //   this.stack.pop().path = true;
-    // } else {
-    //   this.maze.solving = false;
-    //   this.maze.solved = true;
-    // }
+    if (this.pathfinder === this.start) {
+      this.maze.solving = false;
+      this.maze.solved = true;
+    } else if (!this.pathfinder) {
+      this.pathfinder = this.finish.parent;
+    } else {
+      this.pathfinder.path = true;
+      this.pathfinder = this.pathfinder.parent;
+    }
   }
 
   draw(ctx) {
     const maze = this.maze;
-    this.algorithm();
+    if (this.current === this.finish) {
+      this.path();
+    } else {
+      this.algorithm();
+    }
     maze.cells.forEach( row => {
       row.forEach( cell => {
         cell.draw(ctx);
@@ -134,9 +144,6 @@ class SolveAStar {
     this.current.highlight(ctx);
     this.start.highlightStart(ctx);
     this.finish.highlightEnd(ctx);
-    if (this.current === this.finish) {
-      this.path();
-    }
   }
 
 
