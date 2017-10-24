@@ -774,7 +774,6 @@ var eventHandle = function eventHandle(ctx, canvas) {
     eventHelper();
     var gen = new GenerateDFS(maezr);
     maezr.generator = gen;
-    maezr.generator.fast = false;
     maezr.begin();
   });
 
@@ -853,11 +852,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var GenerateDFS = __webpack_require__(1);
-var GenerateSidewinder = __webpack_require__(2);
-var GeneratePrim = __webpack_require__(3);
-var GenerateKruskal = __webpack_require__(4);
-
 var Maze = function () {
   function Maze(canvas) {
     _classCallCheck(this, Maze);
@@ -875,19 +869,19 @@ var Maze = function () {
   }
 
   _createClass(Maze, [{
-    key: 'draw',
+    key: "draw",
     value: function draw() {
       if (this.generator) {
         this.generator.draw(this.ctx);
       }
     }
   }, {
-    key: 'begin',
+    key: "begin",
     value: function begin() {
       requestAnimationFrame(this.animate.bind(this));
     }
   }, {
-    key: 'animate',
+    key: "animate",
     value: function animate() {
       var _this = this;
 

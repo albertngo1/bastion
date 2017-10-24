@@ -1,4 +1,19 @@
+#title {
+  position: absolute;
+  user-select: none;
+  cursor: default;
+  font-weight: bolder;
+  font-size: 70px;
+  margin-left: 20px;
+}
 
+#maze-gen-title {
+  text-decoration: underline;
+  font-size: 17px;
+  user-select: none;
+  font-weight: bolder;
+  cursor: default;
+}
 
 section {
   display: flex;
@@ -12,6 +27,7 @@ body {
   flex-direction: column;
   height: 100%;
   width: 100%;
+  font-family: 'Roboto';
 }
 
 .generator-btns {
@@ -19,4 +35,43 @@ body {
   flex-direction: row;
   justify-content: space-between;
   width: 500px;
+  margin: 5px 0;
+}
+
+.generator-btns > button {
+  border: 1px solid black;
+  padding: 3px;
+  border-radius: 3px;
+}
+.generator-btns > button:hover {
+  background-color: rgb(212, 212, 212);
+}
+
+footer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+ul {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100px;
+}
+ul > li {
+  border: 1px solid black;
+  border-radius: 3px;
+  padding: 3px;
+  display: flex;
+  justify-content: center;
+}
+ul > li:hover {
+  background-color: rgb(212, 212, 212);
+}
+
+footer div {
+  user-select: none;
+  cursor: default;
+  margin-left: 15px;
 }

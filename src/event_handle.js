@@ -5,7 +5,7 @@ const GenerateKruskal = require('./generate//kruskal/kruskal.js');
 const Maze = require('./maze.js');
 
 const eventHandle = (ctx, canvas) => {
-  
+
   let maezr;
 
   function eventHelper() {
@@ -25,7 +25,6 @@ const eventHandle = (ctx, canvas) => {
     eventHelper();
     let gen = new GenerateDFS(maezr);
     maezr.generator = gen;
-    maezr.generator.fast = false;
     maezr.begin();
   });
 
