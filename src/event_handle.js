@@ -48,6 +48,9 @@ const eventHandle = (ctx, canvas) => {
     maezr.generator = gen;
     maezr.begin();
   });
+
+  
+
 }
 
 

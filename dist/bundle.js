@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/dist";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -173,6 +173,90 @@ module.exports = Cell;
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var EventHandle = __webpack_require__(2);
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  var canvas = document.getElementById("canvas");
+  var ctx = canvas.getContext('2d');
+
+  canvas.width = 500;
+  canvas.height = 500;
+
+  ctx.fillStyle = 'black';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  EventHandle(ctx, canvas);
+});
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var GenerateDFS = __webpack_require__(3);
+var GenerateSidewinder = __webpack_require__(4);
+var GeneratePrim = __webpack_require__(5);
+var GenerateKruskal = __webpack_require__(6);
+var Maze = __webpack_require__(8);
+
+var eventHandle = function eventHandle(ctx, canvas) {
+
+  var maezr = void 0;
+
+  function eventHelper() {
+    $("button").prop("disabled", true);
+    maezr = new Maze(canvas);
+  }
+
+  $("#instant-gen").click(function () {
+    eventHelper();
+    var gen = new GenerateDFS(maezr);
+    maezr.generator = gen;
+    maezr.generator.fast = true;
+    maezr.begin();
+  });
+
+  $("#dfs-gen").click(function () {
+    eventHelper();
+    var gen = new GenerateDFS(maezr);
+    maezr.generator = gen;
+    maezr.begin();
+  });
+
+  $("#prim-gen").click(function () {
+    eventHelper();
+    var gen = new GeneratePrim(maezr);
+    maezr.generator = gen;
+    maezr.begin();
+  });
+
+  $("#sidewinder-gen").click(function () {
+    eventHelper();
+    var gen = new GenerateSidewinder(maezr);
+    maezr.generator = gen;
+    maezr.begin();
+  });
+
+  $("#kruskal-gen").click(function () {
+    eventHelper();
+    var gen = new GenerateKruskal(maezr);
+    maezr.generator = gen;
+    maezr.begin();
+  });
+};
+
+module.exports = eventHandle;
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -318,7 +402,7 @@ var GenerateDFS = function () {
 module.exports = GenerateDFS;
 
 /***/ }),
-/* 2 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -426,7 +510,7 @@ module.exports = GenerateSidewinder;
 // }
 
 /***/ }),
-/* 3 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -587,7 +671,7 @@ var GeneratePrim = function () {
 module.exports = GeneratePrim;
 
 /***/ }),
-/* 4 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -718,90 +802,6 @@ var GenerateKruskal = function () {
 module.exports = GenerateKruskal;
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var EventHandle = __webpack_require__(6);
-
-document.addEventListener("DOMContentLoaded", function () {
-
-  var canvas = document.getElementById("canvas");
-  var ctx = canvas.getContext('2d');
-
-  canvas.width = 500;
-  canvas.height = 500;
-
-  ctx.fillStyle = 'black';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  EventHandle(ctx, canvas);
-});
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var GenerateDFS = __webpack_require__(1);
-var GenerateSidewinder = __webpack_require__(2);
-var GeneratePrim = __webpack_require__(3);
-var GenerateKruskal = __webpack_require__(4);
-var Maze = __webpack_require__(8);
-
-var eventHandle = function eventHandle(ctx, canvas) {
-
-  var maezr = void 0;
-
-  function eventHelper() {
-    $("button").prop("disabled", true);
-    maezr = new Maze(canvas);
-  }
-
-  $("#instant-gen").click(function () {
-    eventHelper();
-    var gen = new GenerateDFS(maezr);
-    maezr.generator = gen;
-    maezr.generator.fast = true;
-    maezr.begin();
-  });
-
-  $("#dfs-gen").click(function () {
-    eventHelper();
-    var gen = new GenerateDFS(maezr);
-    maezr.generator = gen;
-    maezr.begin();
-  });
-
-  $("#prim-gen").click(function () {
-    eventHelper();
-    var gen = new GeneratePrim(maezr);
-    maezr.generator = gen;
-    maezr.begin();
-  });
-
-  $("#sidewinder-gen").click(function () {
-    eventHelper();
-    var gen = new GenerateSidewinder(maezr);
-    maezr.generator = gen;
-    maezr.begin();
-  });
-
-  $("#kruskal-gen").click(function () {
-    eventHelper();
-    var gen = new GenerateKruskal(maezr);
-    maezr.generator = gen;
-    maezr.begin();
-  });
-};
-
-module.exports = eventHandle;
-
-/***/ }),
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -864,8 +864,10 @@ var Maze = function () {
     this.frameRate = 1000;
 
     this.generating = true;
+    this.solving = false;
 
     this.generator;
+    this.solver;
   }
 
   _createClass(Maze, [{
