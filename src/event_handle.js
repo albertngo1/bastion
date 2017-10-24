@@ -2,7 +2,7 @@ const GenerateDFS = require('./generate/dfs.js');
 const GenerateSidewinder = require('./generate/sidewinder.js');
 const GeneratePrim = require('./generate/prim.js');
 const GenerateKruskal = require('./generate//kruskal/kruskal.js');
-const SolveDFS = require('./solve/dfs_solve.js');
+const SolveDFS = require('./generate/dfs_solve.js');
 const Maze = require('./maze.js');
 
 

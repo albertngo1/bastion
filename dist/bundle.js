@@ -220,7 +220,7 @@ var GenerateDFS = __webpack_require__(3);
 var GenerateSidewinder = __webpack_require__(4);
 var GeneratePrim = __webpack_require__(5);
 var GenerateKruskal = __webpack_require__(6);
-var SolveDFS = __webpack_require__(8);
+var SolveDFS = __webpack_require__(10);
 var Maze = __webpack_require__(9);
 
 var eventHandle = function eventHandle(ctx, canvas) {
@@ -872,7 +872,90 @@ var Tree = function () {
 module.exports = Tree;
 
 /***/ }),
-/* 8 */
+/* 8 */,
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Maze = function () {
+  function Maze(canvas) {
+    _classCallCheck(this, Maze);
+
+    this.w = canvas.width;
+    this.h = canvas.height;
+    this.len = 20;
+    this.ctx = canvas.getContext('2d');
+
+    this.frameRate = 1000;
+
+    this.generating;
+    this.solving = false;
+
+    this.generator;
+    this.solver;
+  }
+
+  _createClass(Maze, [{
+    key: "draw",
+    value: function draw() {
+      if (this.generator) {
+        this.generator.draw(this.ctx);
+      }
+    }
+  }, {
+    key: "solve",
+    value: function solve() {
+      if (this.solver) {
+        this.solver.draw(this.ctx);
+      }
+    }
+  }, {
+    key: "begin",
+    value: function begin() {
+      requestAnimationFrame(this.animate.bind(this));
+    }
+  }, {
+    key: "animate",
+    value: function animate() {
+      var _this = this;
+
+      if (this.generating || this.solving) {
+        setTimeout(function () {
+          requestAnimationFrame(_this.animate.bind(_this));
+          if (_this.generating) {
+            _this.draw();
+          } else {
+            _this.generator = null;
+          }
+          if (_this.solving) {
+            _this.solve();
+            _this.solving = false;
+          } else {
+            _this.solver = null;
+          }
+          if (!_this.generating && !_this.solving) {
+            $("button").prop("disabled", false);
+          }
+        }, 1000 / this.frameRate);
+      } else {
+        requestAnimationFrame(this.animate.bind(this));
+      }
+    }
+  }]);
+
+  return Maze;
+}();
+
+module.exports = Maze;
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -964,88 +1047,6 @@ var SolveDFS = function () {
 }();
 
 module.exports = SolveDFS;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Maze = function () {
-  function Maze(canvas) {
-    _classCallCheck(this, Maze);
-
-    this.w = canvas.width;
-    this.h = canvas.height;
-    this.len = 20;
-    this.ctx = canvas.getContext('2d');
-
-    this.frameRate = 1000;
-
-    this.generating;
-    this.solving = false;
-
-    this.generator;
-    this.solver;
-  }
-
-  _createClass(Maze, [{
-    key: "draw",
-    value: function draw() {
-      if (this.generator) {
-        this.generator.draw(this.ctx);
-      }
-    }
-  }, {
-    key: "solve",
-    value: function solve() {
-      if (this.solver) {
-        this.solver.draw(this.ctx);
-      }
-    }
-  }, {
-    key: "begin",
-    value: function begin() {
-      requestAnimationFrame(this.animate.bind(this));
-    }
-  }, {
-    key: "animate",
-    value: function animate() {
-      var _this = this;
-
-      if (this.generating || this.solving) {
-        setTimeout(function () {
-          requestAnimationFrame(_this.animate.bind(_this));
-          if (_this.generating) {
-            _this.draw();
-          } else {
-            _this.generator = null;
-          }
-          if (_this.solving) {
-            _this.solve();
-            _this.solving = false;
-          } else {
-            _this.solver = null;
-          }
-          if (!_this.generating && !_this.solving) {
-            $("button").prop("disabled", false);
-          }
-        }, 1000 / this.frameRate);
-      } else {
-        requestAnimationFrame(this.animate.bind(this));
-      }
-    }
-  }]);
-
-  return Maze;
-}();
-
-module.exports = Maze;
 
 /***/ })
 /******/ ]);
