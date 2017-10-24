@@ -5,9 +5,10 @@ class SolveDFS {
   constructor(maze) {
     this.maze = maze;
 
-
-    this.start = maze.cells[0][0];
+    this.start = maze.cells[0][0]
+    this.current = maze.cells[0][0];
     this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
+    this.stack = [];
   }
 
   adjacentCells(cell) {
@@ -20,17 +21,29 @@ class SolveDFS {
         }
       }
 
-
     let neighbors = [];
     let x;
     let y;
-    const add = [[-maze.len, 0],[maze.len, 0], [0, maze.len], [0, -maze.len]];
+    const add = [];
+
+    if (!cell.walls[0]) {
+      add.push([0, -maze.len])
+    }
+    if (!cell.walls[1]) {
+      add.push([maze.len, 0])
+    }
+    if (!cell.walls[2]) {
+      add.push([0, maze.len])
+    }
+    if (!cell.walls[3]) {
+      add.push([-maze.len, 0])
+    }
 
     for (let i=0; i < add.length; i++) {
       x = cell.x + add[i][0];
       y = cell.y + add[i][1];
       let neighborCell = this.findCell(x, y);
-      if (inBounds() && neighborCell && !neighborCell.visited) {
+      if (inBounds() && neighborCell && !neighborCell.explored) {
         neighbors.push(neighborCell);
       }
     }
@@ -42,9 +55,11 @@ class SolveDFS {
   findCell(x, y) {
     const maze = this.maze
     for (let i=0; i < maze.cells.length; i++) {
-      let cell = maze.cells[i];
-      if (cell.x === x && cell.y === y) {
-        return cell;
+      for (let j=0; j < maze.cells[0].length; j++) {
+        let cell = maze.cells[i][j];
+        if (cell.x === x && cell.y === y) {
+          return cell;
+        }
       }
     }
     return null;
@@ -52,25 +67,41 @@ class SolveDFS {
 
   algorithm() {
     const maze = this.maze;
-    const next = this.adjacentCells(maze.current);
+    if (this.current !== this.finish) {
+    const next = this.adjacentCells(this.current);
     if (next) {
-      next.visited = true;
-      maze.stack.push(maze.current);
-      maze.current.removeWalls(next);
-      maze.current = next;
-    } else if (maze.stack.length > 0) {
-      maze.current = maze.stack.pop();
-      if (maze.start === maze.current) {
-        maze.generating = false;
+      next.explored = true;
+      this.stack.push(this.current);
+      this.current.removeWalls(next);
+      this.current = next;
+    } else if (this.stack.length > 0) {
+      this.current = this.stack.pop();
       }
+    }
+  }
+
+  path() {
+    if (this.stack.length > 0) {
+      this.stack.pop().path = true;
+    } else {
+      this.maze.solving = false;
     }
   }
 
   draw(ctx) {
     const maze = this.maze;
-    // this.algorithm();
+    this.algorithm();
+    maze.cells.forEach( row => {
+      row.forEach( cell => {
+        cell.draw(ctx);
+      });
+    });
+    this.current.highlight(ctx);
     this.start.highlightStart(ctx);
     this.finish.highlightEnd(ctx);
+    if (this.current === this.finish) {
+      this.path();
+    }
   }
 
 

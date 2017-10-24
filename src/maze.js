@@ -42,7 +42,6 @@ class Maze {
         }
         if (this.solving) {
           this.solve();
-          this.solving = false;
         } else {
           this.solver = null;
         }

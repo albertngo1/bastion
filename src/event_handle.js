@@ -57,12 +57,10 @@ const eventHandle = (ctx, canvas) => {
   });
 
   $("#dfs-solve").click(() => {
-    if (maezr.generator || !maezr.generating) {
-      // $("button").prop("disabled", true);
-      let solve = new SolveDFS(maezr);
-      maezr.solver = solve;
-      maezr.solving = true;
-    }
+    $("button").prop("disabled", true);
+    let solve = new SolveDFS(maezr);
+    maezr.solver = solve;
+    maezr.solving = true;
   });
 
 

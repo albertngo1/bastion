@@ -4,15 +4,15 @@ class GenerateDFS {
 
   constructor(maze) {
     this.maze = maze;
-    this.grid = [];
+    maze.cells = [];
 
     this.createCells(maze);
-    const y = Math.floor(Math.random() * this.grid.length)
-    const x = Math.floor(Math.random() * this.grid[0].length)
-    maze.current = this.grid[y][x];
-    maze.current.visited = true;
-    maze.stack = [];
-    maze.start = maze.current;
+    const y = Math.floor(Math.random() * maze.cells.length)
+    const x = Math.floor(Math.random() * maze.cells[0].length)
+    this.current = maze.cells[y][x];
+    this.current.visited = true;
+    this.stack = [];
+    this.start = this.current;
 
   }
 
@@ -22,11 +22,11 @@ class GenerateDFS {
     let x;
     let y;
     for (let i=0; i < rows; i++) {
-      this.grid[i] = [];
+      maze.cells[i] = [];
       for (let j=0; j < cols; j++) {
         x = (j * maze.len)
         y = (i * maze.len)
-        this.grid[i].push(new Cell(x, y, maze.len));
+        maze.cells[i].push(new Cell(x, y, maze.len));
       }
     }
   }
@@ -62,9 +62,9 @@ class GenerateDFS {
 
   findCell(x, y) {
     const maze = this.maze
-    for (let i=0; i < this.grid.length; i++) {
-      for (let j=0; j < this.grid[0].length; j++) {
-        let cell = this.grid[i][j];
+    for (let i=0; i < maze.cells.length; i++) {
+      for (let j=0; j < maze.cells[0].length; j++) {
+        let cell = maze.cells[i][j];
         if (cell.x === x && cell.y === y) {
           return cell;
         }
@@ -75,15 +75,15 @@ class GenerateDFS {
 
   algorithm() {
     const maze = this.maze;
-    const next = this.adjacentCells(maze.current);
+    const next = this.adjacentCells(this.current);
     if (next) {
       next.visited = true;
-      maze.stack.push(maze.current);
-      maze.current.removeWalls(next);
-      maze.current = next;
-    } else if (maze.stack.length > 0) {
-      maze.current = maze.stack.pop();
-      if (maze.start === maze.current) {
+      this.stack.push(this.current);
+      this.current.removeWalls(next);
+      this.current = next;
+    } else if (this.stack.length > 0) {
+      this.current = this.stack.pop();
+      if (this.start === this.current) {
         maze.generating = false;
       }
     }
@@ -92,15 +92,15 @@ class GenerateDFS {
   fastAlgo() {
     const maze = this.maze;
     while (true) {
-      const next = this.adjacentCells(maze.current);
+      const next = this.adjacentCells(this.current);
       if (next) {
         next.visited = true;
-        maze.stack.push(maze.current);
-        maze.current.removeWalls(next);
-        maze.current = next;
-      } else if (maze.stack.length > 0) {
-        maze.current = maze.stack.pop();
-        if (maze.start === maze.current) {
+        this.stack.push(this.current);
+        this.current.removeWalls(next);
+        this.current = next;
+      } else if (this.stack.length > 0) {
+        this.current = this.stack.pop();
+        if (this.start === this.current) {
           maze.generating = false;
           return;
         }
@@ -115,13 +115,13 @@ class GenerateDFS {
     } else {
       this.algorithm();
     }
-    this.grid.forEach( row => {
+    maze.cells.forEach( row => {
       row.forEach( cell => {
         cell.draw(ctx);
       })
     });
     if (maze.generating) {
-      maze.current.highlight(ctx);
+      this.current.highlight(ctx);
     }
     ctx.strokeRect(0, 0, maze.w, maze.h);
   }

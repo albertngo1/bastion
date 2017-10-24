@@ -157,6 +157,15 @@ var Cell = function () {
         ctx.fillStyle = "teal";
         ctx.fillRect(x, y, this.len, this.len);
       }
+
+      if (this.explored) {
+        ctx.fillStyle = "yellow";
+        ctx.fillRect(x, y, this.len, this.len);
+      }
+      if (this.path) {
+        ctx.fillStyle = "blue";
+        ctx.fillRect(x, y, this.len, this.len);
+      }
     }
   }, {
     key: "highlight",
@@ -176,9 +185,6 @@ var Cell = function () {
       ctx.fillStyle = "#64fbee";
       ctx.fillRect(this.x, this.y, this.len, this.len);
     }
-  }, {
-    key: "solve",
-    value: function solve(ctx) {}
   }]);
 
   return Cell;
@@ -274,12 +280,10 @@ var eventHandle = function eventHandle(ctx, canvas) {
   });
 
   $("#dfs-solve").click(function () {
-    if (maezr.generator || !maezr.generating) {
-      // $("button").prop("disabled", true);
-      var solve = new SolveDFS(maezr);
-      maezr.solver = solve;
-      maezr.solving = true;
-    }
+    $("button").prop("disabled", true);
+    var solve = new SolveDFS(maezr);
+    maezr.solver = solve;
+    maezr.solving = true;
   });
 };
 
@@ -303,15 +307,15 @@ var GenerateDFS = function () {
     _classCallCheck(this, GenerateDFS);
 
     this.maze = maze;
-    this.grid = [];
+    maze.cells = [];
 
     this.createCells(maze);
-    var y = Math.floor(Math.random() * this.grid.length);
-    var x = Math.floor(Math.random() * this.grid[0].length);
-    maze.current = this.grid[y][x];
-    maze.current.visited = true;
-    maze.stack = [];
-    maze.start = maze.current;
+    var y = Math.floor(Math.random() * maze.cells.length);
+    var x = Math.floor(Math.random() * maze.cells[0].length);
+    this.current = maze.cells[y][x];
+    this.current.visited = true;
+    this.stack = [];
+    this.start = this.current;
   }
 
   _createClass(GenerateDFS, [{
@@ -322,11 +326,11 @@ var GenerateDFS = function () {
       var x = void 0;
       var y = void 0;
       for (var i = 0; i < rows; i++) {
-        this.grid[i] = [];
+        maze.cells[i] = [];
         for (var j = 0; j < cols; j++) {
           x = j * maze.len;
           y = i * maze.len;
-          this.grid[i].push(new Cell(x, y, maze.len));
+          maze.cells[i].push(new Cell(x, y, maze.len));
         }
       }
     }
@@ -363,9 +367,9 @@ var GenerateDFS = function () {
     key: 'findCell',
     value: function findCell(x, y) {
       var maze = this.maze;
-      for (var i = 0; i < this.grid.length; i++) {
-        for (var j = 0; j < this.grid[0].length; j++) {
-          var cell = this.grid[i][j];
+      for (var i = 0; i < maze.cells.length; i++) {
+        for (var j = 0; j < maze.cells[0].length; j++) {
+          var cell = maze.cells[i][j];
           if (cell.x === x && cell.y === y) {
             return cell;
           }
@@ -377,15 +381,15 @@ var GenerateDFS = function () {
     key: 'algorithm',
     value: function algorithm() {
       var maze = this.maze;
-      var next = this.adjacentCells(maze.current);
+      var next = this.adjacentCells(this.current);
       if (next) {
         next.visited = true;
-        maze.stack.push(maze.current);
-        maze.current.removeWalls(next);
-        maze.current = next;
-      } else if (maze.stack.length > 0) {
-        maze.current = maze.stack.pop();
-        if (maze.start === maze.current) {
+        this.stack.push(this.current);
+        this.current.removeWalls(next);
+        this.current = next;
+      } else if (this.stack.length > 0) {
+        this.current = this.stack.pop();
+        if (this.start === this.current) {
           maze.generating = false;
         }
       }
@@ -395,15 +399,15 @@ var GenerateDFS = function () {
     value: function fastAlgo() {
       var maze = this.maze;
       while (true) {
-        var next = this.adjacentCells(maze.current);
+        var next = this.adjacentCells(this.current);
         if (next) {
           next.visited = true;
-          maze.stack.push(maze.current);
-          maze.current.removeWalls(next);
-          maze.current = next;
-        } else if (maze.stack.length > 0) {
-          maze.current = maze.stack.pop();
-          if (maze.start === maze.current) {
+          this.stack.push(this.current);
+          this.current.removeWalls(next);
+          this.current = next;
+        } else if (this.stack.length > 0) {
+          this.current = this.stack.pop();
+          if (this.start === this.current) {
             maze.generating = false;
             return;
           }
@@ -419,13 +423,13 @@ var GenerateDFS = function () {
       } else {
         this.algorithm();
       }
-      this.grid.forEach(function (row) {
+      maze.cells.forEach(function (row) {
         row.forEach(function (cell) {
           cell.draw(ctx);
         });
       });
       if (maze.generating) {
-        maze.current.highlight(ctx);
+        this.current.highlight(ctx);
       }
       ctx.strokeRect(0, 0, maze.w, maze.h);
     }
@@ -899,7 +903,9 @@ var SolveDFS = function () {
     this.maze = maze;
 
     this.start = maze.cells[0][0];
+    this.current = maze.cells[0][0];
     this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
+    this.stack = [];
   }
 
   _createClass(SolveDFS, [{
@@ -917,13 +923,26 @@ var SolveDFS = function () {
       var neighbors = [];
       var x = void 0;
       var y = void 0;
-      var add = [[-maze.len, 0], [maze.len, 0], [0, maze.len], [0, -maze.len]];
+      var add = [];
+
+      if (!cell.walls[0]) {
+        add.push([0, -maze.len]);
+      }
+      if (!cell.walls[1]) {
+        add.push([maze.len, 0]);
+      }
+      if (!cell.walls[2]) {
+        add.push([0, maze.len]);
+      }
+      if (!cell.walls[3]) {
+        add.push([-maze.len, 0]);
+      }
 
       for (var i = 0; i < add.length; i++) {
         x = cell.x + add[i][0];
         y = cell.y + add[i][1];
         var neighborCell = this.findCell(x, y);
-        if (inBounds() && neighborCell && !neighborCell.visited) {
+        if (inBounds() && neighborCell && !neighborCell.explored) {
           neighbors.push(neighborCell);
         }
       }
@@ -936,9 +955,11 @@ var SolveDFS = function () {
     value: function findCell(x, y) {
       var maze = this.maze;
       for (var i = 0; i < maze.cells.length; i++) {
-        var cell = maze.cells[i];
-        if (cell.x === x && cell.y === y) {
-          return cell;
+        for (var j = 0; j < maze.cells[0].length; j++) {
+          var cell = maze.cells[i][j];
+          if (cell.x === x && cell.y === y) {
+            return cell;
+          }
         }
       }
       return null;
@@ -947,26 +968,43 @@ var SolveDFS = function () {
     key: "algorithm",
     value: function algorithm() {
       var maze = this.maze;
-      var next = this.adjacentCells(maze.current);
-      if (next) {
-        next.visited = true;
-        maze.stack.push(maze.current);
-        maze.current.removeWalls(next);
-        maze.current = next;
-      } else if (maze.stack.length > 0) {
-        maze.current = maze.stack.pop();
-        if (maze.start === maze.current) {
-          maze.generating = false;
+      if (this.current !== this.finish) {
+        var next = this.adjacentCells(this.current);
+        if (next) {
+          next.explored = true;
+          this.stack.push(this.current);
+          this.current.removeWalls(next);
+          this.current = next;
+        } else if (this.stack.length > 0) {
+          this.current = this.stack.pop();
         }
+      }
+    }
+  }, {
+    key: "path",
+    value: function path() {
+      if (this.stack.length > 0) {
+        this.stack.pop().path = true;
+      } else {
+        this.maze.solving = false;
       }
     }
   }, {
     key: "draw",
     value: function draw(ctx) {
       var maze = this.maze;
-      // this.algorithm();
+      this.algorithm();
+      maze.cells.forEach(function (row) {
+        row.forEach(function (cell) {
+          cell.draw(ctx);
+        });
+      });
+      this.current.highlight(ctx);
       this.start.highlightStart(ctx);
       this.finish.highlightEnd(ctx);
+      if (this.current === this.finish) {
+        this.path();
+      }
     }
   }]);
 
@@ -1038,7 +1076,6 @@ var Maze = function () {
           }
           if (_this.solving) {
             _this.solve();
-            _this.solving = false;
           } else {
             _this.solver = null;
           }

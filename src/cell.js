@@ -78,6 +78,15 @@ class Cell {
       ctx.fillStyle = "teal";
       ctx.fillRect(x, y, this.len, this.len);
     }
+
+    if (this.explored) {
+      ctx.fillStyle = "yellow";
+      ctx.fillRect(x, y, this.len, this.len);
+    }
+    if (this.path) {
+      ctx.fillStyle = "blue";
+      ctx.fillRect(x, y, this.len, this.len);
+    }
   }
 
   highlight(ctx) {
@@ -92,10 +101,6 @@ class Cell {
   highlightEnd(ctx) {
     ctx.fillStyle = "#64fbee";
     ctx.fillRect(this.x, this.y, this.len, this.len);
-  }
-
-  solve(ctx) {
-
   }
 
 }
