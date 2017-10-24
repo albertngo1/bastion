@@ -85,6 +85,19 @@ class Cell {
     ctx.fillRect(this.x, this.y, this.len, this.len);
   }
 
+  highlightStart(ctx) {
+    ctx.fillStyle = "green";
+    ctx.fillRect(this.x, this.y, this.len, this.len);
+  }
+  highlightEnd(ctx) {
+    ctx.fillStyle = "#64fbee";
+    ctx.fillRect(this.x, this.y, this.len, this.len);
+  }
+
+  solve(ctx) {
+
+  }
+
 }
 
 module.exports = Cell;

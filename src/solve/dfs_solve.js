@@ -5,9 +5,11 @@ class SolveDFS {
   constructor(maze) {
     this.maze = maze;
 
-    console.log(maze.cells)
+
+    this.start = maze.cells[0];
+    this.finish = maze.cells[maze.cells.length - 1];
   }
-  
+
   adjacentCells(cell) {
     const maze = this.maze;
     const inBounds = () => {
@@ -66,18 +68,9 @@ class SolveDFS {
 
   draw(ctx) {
     const maze = this.maze;
-    if (this.fast === true) {
-      this.fastAlgo();
-    } else {
-      this.algorithm();
-    }
-    maze.cells.forEach( cell => {
-      cell.draw(ctx);
-    });
-    if (maze.generating) {
-      maze.current.highlight(ctx);
-    }
-    ctx.strokeRect(0, 0, maze.w, maze.h);
+    // this.algorithm();
+    this.start.highlightStart(ctx);
+    this.finish.highlightEnd(ctx);
   }
 
 

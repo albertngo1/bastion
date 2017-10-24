@@ -11,9 +11,14 @@ const eventHandle = (ctx, canvas) => {
   let maezr;
 
   function eventHelper() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     $("button").prop("disabled", true);
     maezr = new Maze(canvas);
+    maezr.solver = null;
+    maezr.solved = false;
+    maezr.solving = false;
     maezr.generating = true;
+    console.log(maezr.solver)
   }
 
   $("#instant-gen").click(() => {
@@ -53,14 +58,11 @@ const eventHandle = (ctx, canvas) => {
   });
 
   $("#dfs-solve").click(() => {
-    if (this.generator || !this.generating) {
-      $("button").prop("disabled", true);
-      console.log('hello')
+    if (maezr.generator || !maezr.generating) {
+      // $("button").prop("disabled", true);
       let solve = new SolveDFS(maezr);
       maezr.solver = solve;
-      maezr.solved = false;
       maezr.solving = true;
-      maezr.begin();
     }
   });
 

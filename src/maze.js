@@ -22,7 +22,9 @@ class Maze {
   }
 
   solve() {
-    this.solver.draw(this.ctx);
+    if (this.solver) {
+      this.solver.draw(this.ctx);
+    }
   }
 
   begin() {
@@ -33,16 +35,23 @@ class Maze {
     if (this.generating || this.solving) {
       setTimeout(() => {
         requestAnimationFrame(this.animate.bind(this));
-        this.draw();
+        if (this.generating) {
+          this.draw();
+        } else {
+          this.generator = null;
+        }
         if (this.solving) {
           this.solve();
+          this.solving = false;
+        } else {
+          this.solver = null;
+        }
+        if (!this.generating && !this.solving) {
+          $("button").prop("disabled", false);
         }
       }, 1000 / this.frameRate)
-      console.log(this.generating)
     } else {
-      $("button").prop("disabled", false);
-      console.log(this.generator)
-      console.log(this.generating)
+      requestAnimationFrame(this.animate.bind(this));
     }
   }
 }
