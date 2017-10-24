@@ -163,14 +163,14 @@ var Cell = function () {
         ctx.fillRect(x, y, this.len, this.len);
       }
       if (this.path) {
-        ctx.fillStyle = "#77e7cf";
+        ctx.fillStyle = "#64fbee";
         ctx.fillRect(x, y, this.len, this.len);
       }
     }
   }, {
     key: "highlight",
     value: function highlight(ctx) {
-      ctx.fillStyle = "red";
+      ctx.fillStyle = "white";
       ctx.fillRect(this.x, this.y, this.len, this.len);
     }
   }, {
@@ -227,8 +227,9 @@ var GenerateSidewinder = __webpack_require__(4);
 var GeneratePrim = __webpack_require__(5);
 var GenerateKruskal = __webpack_require__(6);
 var SolveDFS = __webpack_require__(8);
-var SolveBFS = __webpack_require__(11);
-var Maze = __webpack_require__(9);
+var SolveBFS = __webpack_require__(9);
+var SolveAStar = __webpack_require__(11);
+var Maze = __webpack_require__(10);
 
 var eventHandle = function eventHandle(ctx, canvas) {
 
@@ -295,6 +296,15 @@ var eventHandle = function eventHandle(ctx, canvas) {
     if (maezr.generator && !maezr.solved) {
       $("button").prop("disabled", true);
       var solve = new SolveBFS(maezr);
+      maezr.solver = solve;
+      maezr.solving = true;
+    }
+  });
+
+  $("#astar-solve").click(function () {
+    if (maezr.generator && !maezr.solved) {
+      $("button").prop("disabled", true);
+      var solve = new SolveAStar(maezr);
       maezr.solver = solve;
       maezr.solving = true;
     }
@@ -1039,89 +1049,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Maze = function () {
-  function Maze(canvas) {
-    _classCallCheck(this, Maze);
-
-    this.w = canvas.width;
-    this.h = canvas.height;
-    this.len = 20;
-    this.ctx = canvas.getContext('2d');
-
-    this.frameRate = 1000;
-
-    this.generator;
-    this.generating;
-
-    this.solver;
-    this.solving = false;
-    this.solved = false;
-  }
-
-  _createClass(Maze, [{
-    key: "draw",
-    value: function draw() {
-      if (this.generator) {
-        this.generator.draw(this.ctx);
-      }
-    }
-  }, {
-    key: "solve",
-    value: function solve() {
-      if (this.solver) {
-        this.solver.draw(this.ctx);
-      }
-    }
-  }, {
-    key: "begin",
-    value: function begin() {
-      requestAnimationFrame(this.animate.bind(this));
-    }
-  }, {
-    key: "animate",
-    value: function animate() {
-      var _this = this;
-
-      if (this.generating || this.solving) {
-        setTimeout(function () {
-          requestAnimationFrame(_this.animate.bind(_this));
-          if (_this.generating) {
-            _this.draw();
-          } else {
-            _this.generator = null;
-          }
-          if (_this.solving) {
-            _this.solve();
-          } else {
-            _this.solver = null;
-          }
-          if (!_this.generating && !_this.solving) {
-            $("button").prop("disabled", false);
-          }
-        }, 1000 / this.frameRate);
-      } else {
-        requestAnimationFrame(this.animate.bind(this));
-      }
-    }
-  }]);
-
-  return Maze;
-}();
-
-module.exports = Maze;
-
-/***/ }),
-/* 10 */,
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 var SolveBFS = function () {
   function SolveBFS(maze) {
     _classCallCheck(this, SolveBFS);
@@ -1129,7 +1056,7 @@ var SolveBFS = function () {
     this.maze = maze;
 
     this.start = maze.cells[0][0];
-    this.current = maze.cells[0][0];
+    this.current = this.start;
     this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
     this.queue = [];
   }
@@ -1245,6 +1172,253 @@ var SolveBFS = function () {
 }();
 
 module.exports = SolveBFS;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Maze = function () {
+  function Maze(canvas) {
+    _classCallCheck(this, Maze);
+
+    this.w = canvas.width;
+    this.h = canvas.height;
+    this.len = 20;
+    this.ctx = canvas.getContext('2d');
+
+    this.frameRate = 1000;
+
+    this.generator;
+    this.generating;
+
+    this.solver;
+    this.solving = false;
+    this.solved = false;
+  }
+
+  _createClass(Maze, [{
+    key: "draw",
+    value: function draw() {
+      if (this.generator) {
+        this.generator.draw(this.ctx);
+      }
+    }
+  }, {
+    key: "solve",
+    value: function solve() {
+      if (this.solver) {
+        this.solver.draw(this.ctx);
+      }
+    }
+  }, {
+    key: "begin",
+    value: function begin() {
+      requestAnimationFrame(this.animate.bind(this));
+    }
+  }, {
+    key: "animate",
+    value: function animate() {
+      var _this = this;
+
+      if (this.generating || this.solving) {
+        setTimeout(function () {
+          requestAnimationFrame(_this.animate.bind(_this));
+          if (_this.generating) {
+            _this.draw();
+          } else {
+            _this.generator = null;
+          }
+          if (_this.solving) {
+            _this.solve();
+          } else {
+            _this.solver = null;
+          }
+          if (!_this.generating && !_this.solving) {
+            $("button").prop("disabled", false);
+          }
+        }, 1000 / this.frameRate);
+      } else {
+        requestAnimationFrame(this.animate.bind(this));
+      }
+    }
+  }]);
+
+  return Maze;
+}();
+
+module.exports = Maze;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var SolveAStar = function () {
+  function SolveAStar(maze) {
+    _classCallCheck(this, SolveAStar);
+
+    this.maze = maze;
+
+    this.start = maze.cells[0][0];
+    this.start.f = 0;
+    this.start.g = 0;
+    this.start.h = 0;
+    this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
+
+    this.open = [this.start];
+    this.closed = [];
+  }
+
+  _createClass(SolveAStar, [{
+    key: "adjacentCells",
+    value: function adjacentCells(cell) {
+      var maze = this.maze;
+      var inBounds = function inBounds() {
+        if (maze.x < 0 || maze.x > maze.w || maze.y < 0 || maze.y > maze.h) {
+          return false;
+        } else {
+          return true;
+        }
+      };
+
+      var neighbors = [];
+      var x = void 0;
+      var y = void 0;
+      var add = [];
+
+      if (!cell.walls[0]) {
+        add.push([0, -maze.len]);
+      }
+      if (!cell.walls[1]) {
+        add.push([maze.len, 0]);
+      }
+      if (!cell.walls[2]) {
+        add.push([0, maze.len]);
+      }
+      if (!cell.walls[3]) {
+        add.push([-maze.len, 0]);
+      }
+
+      for (var i = 0; i < add.length; i++) {
+        x = cell.x + add[i][0];
+        y = cell.y + add[i][1];
+        var neighborCell = this.findCell(x, y);
+        if (inBounds() && neighborCell && !neighborCell.explored) {
+          neighborCell.parent = cell;
+          neighbors.push(neighborCell);
+        }
+      }
+      if (neighbors.length > 0) {
+        return neighbors;
+      }
+    }
+  }, {
+    key: "findCell",
+    value: function findCell(x, y) {
+      var maze = this.maze;
+      for (var i = 0; i < maze.cells.length; i++) {
+        for (var j = 0; j < maze.cells[0].length; j++) {
+          var cell = maze.cells[i][j];
+          if (cell.x === x && cell.y === y) {
+            return cell;
+          }
+        }
+      }
+      return null;
+    }
+  }, {
+    key: "algorithm",
+    value: function algorithm() {
+      var maze = this.maze;
+      if (this.current !== this.finish) {
+        if (this.open.length > 0) {
+          this.open.sort(function (a, b) {
+            return b.f - a.f;
+          });
+          this.current = this.open.pop();
+          this.current.explored = true;
+          var neighbors = this.adjacentCells(this.current);
+          if (neighbors) {
+            for (var i = 0; i < neighbors.length; i++) {
+              if (neighbors[i] === this.finish) {
+                this.current = neighbors[i];
+                return;
+              }
+              neighbors[i].g = this.current.g + Math.sqrt(Math.pow(neighbors[i].x - this.current.x, 2) + (neighbors[i].y - this.current.y, 2));
+              neighbors[i].h = Math.sqrt(Math.pow(neighbors[i].x - this.finish.x, 2) + (neighbors[i].y - this.finish.y, 2));
+              neighbors[i].f = neighbors[i].g + neighbors[i].h;
+              var openListCell = this.neighborExist(neighbors[i], this.open);
+              var closedListCell = this.neighborExist(neighbors[i], this.closed);
+              if (openListCell) {
+                if (neighbors[i].f > openListCell.f) {}
+              } else if (closedListCell) {
+                if (neighbors[i].f > openListCell.f) {}
+              } else {
+                this.open.push(neighbors[i]);
+              }
+              this.closed.push(this.current);
+            }
+          }
+        }
+      }
+    }
+  }, {
+    key: "neighborExist",
+    value: function neighborExist(neighbor, list) {
+      for (var i = 0; i < list.length; i++) {
+        var cell = list[i];
+        if (cell.x === neighbor.x && cell.y === neighbor.y) {
+          return cell;
+        }
+      }
+      return false;
+    }
+  }, {
+    key: "path",
+    value: function path() {
+      // if (this.stack.length > 0) {
+      //   this.stack.pop().path = true;
+      // } else {
+      //   this.maze.solving = false;
+      //   this.maze.solved = true;
+      // }
+    }
+  }, {
+    key: "draw",
+    value: function draw(ctx) {
+      var maze = this.maze;
+      this.algorithm();
+      maze.cells.forEach(function (row) {
+        row.forEach(function (cell) {
+          cell.draw(ctx);
+        });
+      });
+      this.current.highlight(ctx);
+      this.start.highlightStart(ctx);
+      this.finish.highlightEnd(ctx);
+      if (this.current === this.finish) {
+        this.path();
+      }
+    }
+  }]);
+
+  return SolveAStar;
+}();
+
+module.exports = SolveAStar;
 
 /***/ })
 /******/ ]);

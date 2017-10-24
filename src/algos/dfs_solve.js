@@ -1,5 +1,3 @@
-
-
 class SolveDFS {
 
   constructor(maze) {

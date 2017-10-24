@@ -84,13 +84,13 @@ class Cell {
       ctx.fillRect(x, y, this.len, this.len);
     }
     if (this.path) {
-      ctx.fillStyle = "#77e7cf";
+      ctx.fillStyle = "#64fbee";
       ctx.fillRect(x, y, this.len, this.len);
     }
   }
 
   highlight(ctx) {
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "white";
     ctx.fillRect(this.x, this.y, this.len, this.len);
   }
 

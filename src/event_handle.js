@@ -1,9 +1,10 @@
-const GenerateDFS = require('./generate/dfs.js');
-const GenerateSidewinder = require('./generate/sidewinder.js');
-const GeneratePrim = require('./generate/prim.js');
-const GenerateKruskal = require('./generate//kruskal/kruskal.js');
-const SolveDFS = require('./generate/dfs_solve.js');
-const SolveBFS = require('./generate/bfs_solve.js');
+const GenerateDFS = require('./algos/dfs.js');
+const GenerateSidewinder = require('./algos/sidewinder.js');
+const GeneratePrim = require('./algos/prim.js');
+const GenerateKruskal = require('./algos//kruskal/kruskal.js');
+const SolveDFS = require('./algos/dfs_solve.js');
+const SolveBFS = require('./algos/bfs_solve.js');
+const SolveAStar = require('./algos/a_star_solve.js');
 const Maze = require('./maze.js');
 
 
@@ -72,6 +73,15 @@ const eventHandle = (ctx, canvas) => {
     if (maezr.generator && !maezr.solved) {
       $("button").prop("disabled", true);
       let solve = new SolveBFS(maezr);
+      maezr.solver = solve;
+      maezr.solving = true;
+    }
+  });
+
+  $("#astar-solve").click(() => {
+    if (maezr.generator && !maezr.solved) {
+      $("button").prop("disabled", true);
+      let solve = new SolveAStar(maezr);
       maezr.solver = solve;
       maezr.solving = true;
     }
