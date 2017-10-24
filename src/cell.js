@@ -80,11 +80,11 @@ class Cell {
     }
 
     if (this.explored) {
-      ctx.fillStyle = "yellow";
+      ctx.fillStyle = "rgb(221, 56, 199)";
       ctx.fillRect(x, y, this.len, this.len);
     }
     if (this.path) {
-      ctx.fillStyle = "blue";
+      ctx.fillStyle = "#77e7cf";
       ctx.fillRect(x, y, this.len, this.len);
     }
   }

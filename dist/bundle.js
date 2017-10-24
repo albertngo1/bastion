@@ -159,11 +159,11 @@ var Cell = function () {
       }
 
       if (this.explored) {
-        ctx.fillStyle = "yellow";
+        ctx.fillStyle = "rgb(221, 56, 199)";
         ctx.fillRect(x, y, this.len, this.len);
       }
       if (this.path) {
-        ctx.fillStyle = "blue";
+        ctx.fillStyle = "#77e7cf";
         ctx.fillRect(x, y, this.len, this.len);
       }
     }
@@ -917,6 +917,7 @@ var SolveDFS = function () {
     this.maze = maze;
 
     this.start = maze.cells[0][0];
+    this.start.parent = null;
     this.current = maze.cells[0][0];
     this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
     this.stack = [];
@@ -1198,6 +1199,7 @@ var SolveBFS = function () {
         var neighbors = this.adjacentCells(this.current);
         if (neighbors) {
           neighbors.forEach(function (neighbor) {
+            neighbor.parent = _this.current;
             _this.queue.push(neighbor);
           });
         }
@@ -1209,18 +1211,20 @@ var SolveBFS = function () {
   }, {
     key: "path",
     value: function path() {
-      if (this.queue.length > 0) {
-        this.queue.pop().path = true;
-      } else {
+      if (this.pathfinder === this.start) {
         this.maze.solving = false;
         this.maze.solved = true;
+      } else if (!this.pathfinder) {
+        this.pathfinder = this.finish.parent;
+      } else {
+        this.pathfinder.path = true;
+        this.pathfinder = this.pathfinder.parent;
       }
     }
   }, {
     key: "draw",
     value: function draw(ctx) {
       var maze = this.maze;
-      this.algorithm();
       maze.cells.forEach(function (row) {
         row.forEach(function (cell) {
           cell.draw(ctx);
@@ -1231,6 +1235,8 @@ var SolveBFS = function () {
       this.finish.highlightEnd(ctx);
       if (this.current === this.finish) {
         this.path();
+      } else {
+        this.algorithm();
       }
     }
   }]);

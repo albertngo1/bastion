@@ -5,7 +5,8 @@ class SolveDFS {
   constructor(maze) {
     this.maze = maze;
 
-    this.start = maze.cells[0][0]
+    this.start = maze.cells[0][0];
+    this.start.parent = null;
     this.current = maze.cells[0][0];
     this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
     this.stack = [];

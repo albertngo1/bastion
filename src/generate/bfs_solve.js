@@ -71,6 +71,7 @@ class SolveBFS {
       const neighbors = this.adjacentCells(this.current);
       if (neighbors) {
         neighbors.forEach(neighbor => {
+          neighbor.parent = this.current;
           this.queue.push(neighbor);
         })
       }
@@ -81,17 +82,19 @@ class SolveBFS {
   }
 
   path() {
-    if (this.queue.length > 0) {
-      this.queue.pop().path = true;
-    } else {
+    if (this.pathfinder === this.start) {
       this.maze.solving = false;
       this.maze.solved = true;
+    } else if (!this.pathfinder) {
+      this.pathfinder = this.finish.parent;
+    } else {
+      this.pathfinder.path = true;
+      this.pathfinder = this.pathfinder.parent;
     }
   }
 
   draw(ctx) {
     const maze = this.maze;
-    this.algorithm();
     maze.cells.forEach( row => {
       row.forEach( cell => {
         cell.draw(ctx);
@@ -102,6 +105,8 @@ class SolveBFS {
     this.finish.highlightEnd(ctx);
     if (this.current === this.finish) {
       this.path();
+    } else {
+      this.algorithm();
     }
   }
 
