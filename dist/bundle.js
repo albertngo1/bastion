@@ -227,6 +227,7 @@ var GenerateSidewinder = __webpack_require__(4);
 var GeneratePrim = __webpack_require__(5);
 var GenerateKruskal = __webpack_require__(6);
 var SolveDFS = __webpack_require__(8);
+var SolveBFS = __webpack_require__(11);
 var Maze = __webpack_require__(9);
 
 var eventHandle = function eventHandle(ctx, canvas) {
@@ -282,6 +283,13 @@ var eventHandle = function eventHandle(ctx, canvas) {
   $("#dfs-solve").click(function () {
     $("button").prop("disabled", true);
     var solve = new SolveDFS(maezr);
+    maezr.solver = solve;
+    maezr.solving = true;
+  });
+
+  $("#bfs-solve").click(function () {
+    $("button").prop("disabled", true);
+    var solve = new SolveBFS(maezr);
     maezr.solver = solve;
     maezr.solving = true;
   });
@@ -973,7 +981,6 @@ var SolveDFS = function () {
         if (next) {
           next.explored = true;
           this.stack.push(this.current);
-          this.current.removeWalls(next);
           this.current = next;
         } else if (this.stack.length > 0) {
           this.current = this.stack.pop();
@@ -1093,6 +1100,136 @@ var Maze = function () {
 }();
 
 module.exports = Maze;
+
+/***/ }),
+/* 10 */,
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var SolveBFS = function () {
+  function SolveBFS(maze) {
+    _classCallCheck(this, SolveBFS);
+
+    this.maze = maze;
+
+    this.start = maze.cells[0][0];
+    this.current = maze.cells[0][0];
+    this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
+    this.queue = [];
+  }
+
+  _createClass(SolveBFS, [{
+    key: "adjacentCells",
+    value: function adjacentCells(cell) {
+      var maze = this.maze;
+      var inBounds = function inBounds() {
+        if (maze.x < 0 || maze.x > maze.w || maze.y < 0 || maze.y > maze.h) {
+          return false;
+        } else {
+          return true;
+        }
+      };
+
+      var neighbors = [];
+      var x = void 0;
+      var y = void 0;
+      var add = [];
+      if (!cell.walls[0]) {
+        add.push([0, -maze.len]);
+      }
+      if (!cell.walls[1]) {
+        add.push([maze.len, 0]);
+      }
+      if (!cell.walls[2]) {
+        add.push([0, maze.len]);
+      }
+      if (!cell.walls[3]) {
+        add.push([-maze.len, 0]);
+      }
+
+      for (var i = 0; i < add.length; i++) {
+        x = cell.x + add[i][0];
+        y = cell.y + add[i][1];
+        var neighborCell = this.findCell(x, y);
+        if (inBounds() && neighborCell && !neighborCell.explored) {
+          neighbors.push(neighborCell);
+        }
+      }
+      if (neighbors.length > 0) {
+        return neighbors;
+      }
+    }
+  }, {
+    key: "findCell",
+    value: function findCell(x, y) {
+      var maze = this.maze;
+      for (var i = 0; i < maze.cells.length; i++) {
+        for (var j = 0; j < maze.cells[0].length; j++) {
+          var cell = maze.cells[i][j];
+          if (cell.x === x && cell.y === y) {
+            return cell;
+          }
+        }
+      }
+      return null;
+    }
+  }, {
+    key: "algorithm",
+    value: function algorithm() {
+      var _this = this;
+
+      var maze = this.maze;
+      if (this.current !== this.finish) {
+        var neighbors = this.adjacentCells(this.current);
+        if (neighbors) {
+          neighbors.forEach(function (neighbor) {
+            _this.queue.push(neighbor);
+          });
+        }
+        var next = this.queue.shift();
+        next.explored = true;
+        this.current = next;
+      }
+    }
+  }, {
+    key: "path",
+    value: function path() {
+      if (this.queue.length > 0) {
+        this.queue.pop().path = true;
+      } else {
+        this.maze.solving = false;
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw(ctx) {
+      var maze = this.maze;
+      this.algorithm();
+      maze.cells.forEach(function (row) {
+        row.forEach(function (cell) {
+          cell.draw(ctx);
+        });
+      });
+      this.current.highlight(ctx);
+      this.start.highlightStart(ctx);
+      this.finish.highlightEnd(ctx);
+      if (this.current === this.finish) {
+        this.path();
+      }
+    }
+  }]);
+
+  return SolveBFS;
+}();
+
+module.exports = SolveBFS;
 
 /***/ })
 /******/ ]);

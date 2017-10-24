@@ -72,7 +72,6 @@ class SolveDFS {
     if (next) {
       next.explored = true;
       this.stack.push(this.current);
-      this.current.removeWalls(next);
       this.current = next;
     } else if (this.stack.length > 0) {
       this.current = this.stack.pop();

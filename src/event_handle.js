@@ -3,6 +3,7 @@ const GenerateSidewinder = require('./generate/sidewinder.js');
 const GeneratePrim = require('./generate/prim.js');
 const GenerateKruskal = require('./generate//kruskal/kruskal.js');
 const SolveDFS = require('./generate/dfs_solve.js');
+const SolveBFS = require('./generate/bfs_solve.js');
 const Maze = require('./maze.js');
 
 
@@ -59,6 +60,13 @@ const eventHandle = (ctx, canvas) => {
   $("#dfs-solve").click(() => {
     $("button").prop("disabled", true);
     let solve = new SolveDFS(maezr);
+    maezr.solver = solve;
+    maezr.solving = true;
+  });
+
+  $("#bfs-solve").click(() => {
+    $("button").prop("disabled", true);
+    let solve = new SolveBFS(maezr);
     maezr.solver = solve;
     maezr.solving = true;
   });
