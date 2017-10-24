@@ -8,7 +8,7 @@ class Maze {
 
     this.frameRate = 1000;
 
-    this.generating = true;
+    this.generating;
     this.solving = false;
 
     this.generator;
@@ -21,18 +21,28 @@ class Maze {
     }
   }
 
+  solve() {
+    this.solver.draw(this.ctx);
+  }
+
   begin() {
     requestAnimationFrame(this.animate.bind(this));
   }
 
   animate() {
-    if (this.generating) {
+    if (this.generating || this.solving) {
       setTimeout(() => {
         requestAnimationFrame(this.animate.bind(this));
         this.draw();
+        if (this.solving) {
+          this.solve();
+        }
       }, 1000 / this.frameRate)
+      console.log(this.generating)
     } else {
       $("button").prop("disabled", false);
+      console.log(this.generator)
+      console.log(this.generating)
     }
   }
 }

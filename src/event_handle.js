@@ -2,7 +2,9 @@ const GenerateDFS = require('./generate/dfs.js');
 const GenerateSidewinder = require('./generate/sidewinder.js');
 const GeneratePrim = require('./generate/prim.js');
 const GenerateKruskal = require('./generate//kruskal/kruskal.js');
+const SolveDFS = require('./solve/dfs_solve.js');
 const Maze = require('./maze.js');
+
 
 const eventHandle = (ctx, canvas) => {
 
@@ -11,6 +13,7 @@ const eventHandle = (ctx, canvas) => {
   function eventHelper() {
     $("button").prop("disabled", true);
     maezr = new Maze(canvas);
+    maezr.generating = true;
   }
 
   $("#instant-gen").click(() => {
@@ -49,7 +52,19 @@ const eventHandle = (ctx, canvas) => {
     maezr.begin();
   });
 
-  
+  $("#dfs-solve").click(() => {
+    if (this.generator || !this.generating) {
+      $("button").prop("disabled", true);
+      console.log('hello')
+      let solve = new SolveDFS(maezr);
+      maezr.solver = solve;
+      maezr.solved = false;
+      maezr.solving = true;
+      maezr.begin();
+    }
+  });
+
+
 
 }
 

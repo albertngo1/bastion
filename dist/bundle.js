@@ -205,6 +205,7 @@ var GenerateDFS = __webpack_require__(3);
 var GenerateSidewinder = __webpack_require__(4);
 var GeneratePrim = __webpack_require__(5);
 var GenerateKruskal = __webpack_require__(6);
+var SolveDFS = __webpack_require__(9);
 var Maze = __webpack_require__(8);
 
 var eventHandle = function eventHandle(ctx, canvas) {
@@ -214,6 +215,7 @@ var eventHandle = function eventHandle(ctx, canvas) {
   function eventHelper() {
     $("button").prop("disabled", true);
     maezr = new Maze(canvas);
+    maezr.generating = true;
   }
 
   $("#instant-gen").click(function () {
@@ -250,6 +252,15 @@ var eventHandle = function eventHandle(ctx, canvas) {
     var gen = new GenerateKruskal(maezr);
     maezr.generator = gen;
     maezr.begin();
+  });
+
+  $("#dfs-solve").click(function () {
+    $("button").prop("disabled", true);
+    var solve = new SolveDFS(maezr);
+    maezr.solver = solve;
+    maezr.solved = false;
+    maezr.solving = true;
+    maezr.solve();
   });
 };
 
@@ -863,7 +874,7 @@ var Maze = function () {
 
     this.frameRate = 1000;
 
-    this.generating = true;
+    this.generating;
     this.solving = false;
 
     this.generator;
@@ -878,6 +889,11 @@ var Maze = function () {
       }
     }
   }, {
+    key: "solve",
+    value: function solve() {
+      this.solver.draw(this.ctx);
+    }
+  }, {
     key: "begin",
     value: function begin() {
       requestAnimationFrame(this.animate.bind(this));
@@ -887,10 +903,13 @@ var Maze = function () {
     value: function animate() {
       var _this = this;
 
-      if (this.generating) {
+      if (this.generating || this.solving) {
         setTimeout(function () {
           requestAnimationFrame(_this.animate.bind(_this));
           _this.draw();
+          if (_this.solving) {
+            _this.solve();
+          }
         }, 1000 / this.frameRate);
       } else {
         $("button").prop("disabled", false);
@@ -902,6 +921,12 @@ var Maze = function () {
 }();
 
 module.exports = Maze;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+throw new Error("Module build failed: Error: Couldn't find preset \"es2015\" relative to directory \"/Users/Pooh/Downloads/maezr/src/solve\"\n    at /Users/Pooh/Downloads/maezr/node_modules/babel-core/lib/transformation/file/options/option-manager.js:293:19\n    at Array.map (native)\n    at OptionManager.resolvePresets (/Users/Pooh/Downloads/maezr/node_modules/babel-core/lib/transformation/file/options/option-manager.js:275:20)\n    at OptionManager.mergePresets (/Users/Pooh/Downloads/maezr/node_modules/babel-core/lib/transformation/file/options/option-manager.js:264:10)\n    at OptionManager.mergeOptions (/Users/Pooh/Downloads/maezr/node_modules/babel-core/lib/transformation/file/options/option-manager.js:249:14)\n    at OptionManager.init (/Users/Pooh/Downloads/maezr/node_modules/babel-core/lib/transformation/file/options/option-manager.js:368:12)\n    at File.initOptions (/Users/Pooh/Downloads/maezr/node_modules/babel-core/lib/transformation/file/index.js:212:65)\n    at new File (/Users/Pooh/Downloads/maezr/node_modules/babel-core/lib/transformation/file/index.js:135:24)\n    at Pipeline.transform (/Users/Pooh/Downloads/maezr/node_modules/babel-core/lib/transformation/pipeline.js:46:16)\n    at transpile (/Users/Pooh/Downloads/maezr/node_modules/babel-loader/lib/index.js:50:20)\n    at Object.module.exports (/Users/Pooh/Downloads/maezr/node_modules/babel-loader/lib/index.js:175:20)");
 
 /***/ })
 /******/ ]);
