@@ -1375,7 +1375,7 @@ var Maze = function () {
 
     this.w = canvas.width;
     this.h = canvas.height;
-    this.len = 20;
+    this.len = 5;
     this.ctx = canvas.getContext('2d');
 
     this.frameRate = 1000;

@@ -9,34 +9,46 @@
     <link rel="stylesheet" href="./assets/font-awesome/css/font-awesome.min.css">
     <link rel="icon" href="./assets/maezr.ico">
   </head>
-  <body>
+    <body>
       <div id="title">
         MAEZR
       </div>
-      <section>
-        <div>
-          <span id="maze-gen-title">Maze Generators</span>
-          <div class="generator-btns">
-            <button id="instant-gen">Instant Maze</button>
-            <button id="dfs-gen">DFS</button>
-            <button id="prim-gen">Prim</button>
-            <button id="sidewinder-gen">Sidewinder</button>
-            <button id="kruskal-gen">Kruskal</button>
+      <div class="section-wrap">
+        <section>
+          <div>
+            <span id="maze-gen-title">Maze Generators</span>
+            <div class="generator-btns">
+              <button id="instant-gen">Instant Maze</button>
+              <button id="dfs-gen">DFS</button>
+              <button id="prim-gen">Prim</button>
+              <button id="sidewinder-gen">Sidewinder</button>
+              <button id="kruskal-gen">Kruskal</button>
+            </div>
+          </div>
+          <div class="canvas-wrapper">
+            <canvas id="canvas"></canvas>
+          </div>
+          <div>
+            <div class="generator-btns">
+              <button id="bfs-solve">BFS</button>
+              <button id="dfs-solve">DFS</button>
+              <button id="astar-solve">A*</button>
+              <button id="dijkstra-solve">Dijkstra</button>
+            </div>
+            <span id="maze-gen-title">Maze Solvers</span>
+          </div>
+        </section>
+        <div id="informational-box">
+          <div class="information-details">
+            Details
+          </div>
+          <div class="information-content">
+            A visualization project implementing maze generating and maze solving algorithms.
+            Select a maze generator before selecting a solver.
+
           </div>
         </div>
-        <div class="canvas-wrapper">
-          <canvas id="canvas"></canvas>
-        </div>
-        <div>
-          <div class="generator-btns">
-            <button id="bfs-solve">BFS</button>
-            <button id="dfs-solve">DFS</button>
-            <button id="astar-solve">A*</button>
-            <button id="dijkstra-solve">Dijkstra</button>
-          </div>
-          <span id="maze-gen-title">Maze Solvers</span>
-        </div>
-      </section>
+      </div>
 
       <footer>
         <ul class="fa-ul footer-ul">
@@ -63,5 +75,5 @@
           by Albert Ngo
         </div>
       </footer>
-  </body>
+    </body>
 </html>
