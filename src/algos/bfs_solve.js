@@ -108,6 +108,7 @@ class SolveBFS {
     } else {
       this.algorithm();
     }
+    ctx.strokeRect(0, 0, maze.w, maze.h);
   }
 
 }

@@ -6,6 +6,10 @@
   margin-left: 20px;
 }
 
+#name {
+  margin-bottom: 6px;
+}
+
 #maze-gen-title {
   text-decoration: underline;
   font-size: 17px;
@@ -20,7 +24,6 @@ section {
   justify-content: center;
   align-items: center;
 }
-
 body {
   display: flex;
   flex-direction: column;

@@ -228,8 +228,9 @@ var GeneratePrim = __webpack_require__(5);
 var GenerateKruskal = __webpack_require__(6);
 var SolveDFS = __webpack_require__(8);
 var SolveBFS = __webpack_require__(9);
-var SolveAStar = __webpack_require__(11);
-var Maze = __webpack_require__(10);
+var SolveAStar = __webpack_require__(10);
+var SolveDijkstra = __webpack_require__(12);
+var Maze = __webpack_require__(11);
 
 var eventHandle = function eventHandle(ctx, canvas) {
 
@@ -302,6 +303,15 @@ var eventHandle = function eventHandle(ctx, canvas) {
   });
 
   $("#astar-solve").click(function () {
+    if (maezr.generator && !maezr.solved) {
+      $("button").prop("disabled", true);
+      var solve = new SolveAStar(maezr);
+      maezr.solver = solve;
+      maezr.solving = true;
+    }
+  });
+
+  $("#dijkstra-solve").click(function () {
     if (maezr.generator && !maezr.solved) {
       $("button").prop("disabled", true);
       var solve = new SolveAStar(maezr);
@@ -1030,6 +1040,7 @@ var SolveDFS = function () {
       if (this.current === this.finish) {
         this.path();
       }
+      ctx.strokeRect(0, 0, maze.w, maze.h);
     }
   }]);
 
@@ -1165,6 +1176,7 @@ var SolveBFS = function () {
       } else {
         this.algorithm();
       }
+      ctx.strokeRect(0, 0, maze.w, maze.h);
     }
   }]);
 
@@ -1175,88 +1187,6 @@ module.exports = SolveBFS;
 
 /***/ }),
 /* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Maze = function () {
-  function Maze(canvas) {
-    _classCallCheck(this, Maze);
-
-    this.w = canvas.width;
-    this.h = canvas.height;
-    this.len = 20;
-    this.ctx = canvas.getContext('2d');
-
-    this.frameRate = 1000;
-
-    this.generator;
-    this.generating;
-
-    this.solver;
-    this.solving = false;
-    this.solved = false;
-  }
-
-  _createClass(Maze, [{
-    key: "draw",
-    value: function draw() {
-      if (this.generator) {
-        this.generator.draw(this.ctx);
-      }
-    }
-  }, {
-    key: "solve",
-    value: function solve() {
-      if (this.solver) {
-        this.solver.draw(this.ctx);
-      }
-    }
-  }, {
-    key: "begin",
-    value: function begin() {
-      requestAnimationFrame(this.animate.bind(this));
-    }
-  }, {
-    key: "animate",
-    value: function animate() {
-      var _this = this;
-
-      if (this.generating || this.solving) {
-        setTimeout(function () {
-          requestAnimationFrame(_this.animate.bind(_this));
-          if (_this.generating) {
-            _this.draw();
-          } else {
-            _this.generator = null;
-          }
-          if (_this.solving) {
-            _this.solve();
-          } else {
-            _this.solver = null;
-          }
-          if (!_this.generating && !_this.solving) {
-            $("button").prop("disabled", false);
-          }
-        }, 1000 / this.frameRate);
-      } else {
-        requestAnimationFrame(this.animate.bind(this));
-      }
-    }
-  }]);
-
-  return Maze;
-}();
-
-module.exports = Maze;
-
-/***/ }),
-/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1419,6 +1349,7 @@ var SolveAStar = function () {
       this.current.highlight(ctx);
       this.start.highlightStart(ctx);
       this.finish.highlightEnd(ctx);
+      ctx.strokeRect(0, 0, maze.w, maze.h);
     }
   }]);
 
@@ -1426,6 +1357,248 @@ var SolveAStar = function () {
 }();
 
 module.exports = SolveAStar;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Maze = function () {
+  function Maze(canvas) {
+    _classCallCheck(this, Maze);
+
+    this.w = canvas.width;
+    this.h = canvas.height;
+    this.len = 20;
+    this.ctx = canvas.getContext('2d');
+
+    this.frameRate = 1000;
+
+    this.generator;
+    this.generating;
+
+    this.solver;
+    this.solving = false;
+    this.solved = false;
+  }
+
+  _createClass(Maze, [{
+    key: "draw",
+    value: function draw() {
+      if (this.generator) {
+        this.generator.draw(this.ctx);
+      }
+    }
+  }, {
+    key: "solve",
+    value: function solve() {
+      if (this.solver) {
+        this.solver.draw(this.ctx);
+      }
+    }
+  }, {
+    key: "begin",
+    value: function begin() {
+      requestAnimationFrame(this.animate.bind(this));
+    }
+  }, {
+    key: "animate",
+    value: function animate() {
+      var _this = this;
+
+      if (this.generating || this.solving) {
+        setTimeout(function () {
+          requestAnimationFrame(_this.animate.bind(_this));
+          if (_this.generating) {
+            _this.draw();
+          } else {
+            _this.generator = null;
+          }
+          if (_this.solving) {
+            _this.solve();
+          } else {
+            _this.solver = null;
+          }
+          if (!_this.generating && !_this.solving) {
+            $("button").prop("disabled", false);
+          }
+        }, 1000 / this.frameRate);
+      } else {
+        requestAnimationFrame(this.animate.bind(this));
+      }
+    }
+  }]);
+
+  return Maze;
+}();
+
+module.exports = Maze;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var SolveDijkstra = function () {
+  function SolveDijkstra(maze) {
+    var _this = this;
+
+    _classCallCheck(this, SolveDijkstra);
+
+    this.maze = maze;
+
+    this.start = maze.cells[0][0];
+    this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
+    this.set = [];
+    maze.cells.forEach(function (cell) {
+      cell.distance = 1 / 0;
+      cell.parent = null;
+      _this.set.push(cell);
+    });
+
+    this.start.distance = 0;
+  }
+
+  _createClass(SolveDijkstra, [{
+    key: "adjacentCells",
+    value: function adjacentCells(cell) {
+      var maze = this.maze;
+      var inBounds = function inBounds() {
+        if (maze.x < 0 || maze.x > maze.w || maze.y < 0 || maze.y > maze.h) {
+          return false;
+        } else {
+          return true;
+        }
+      };
+
+      var neighbors = [];
+      var x = void 0;
+      var y = void 0;
+      var add = [];
+
+      if (!cell.walls[0]) {
+        add.push([0, -maze.len]);
+      }
+      if (!cell.walls[1]) {
+        add.push([maze.len, 0]);
+      }
+      if (!cell.walls[2]) {
+        add.push([0, maze.len]);
+      }
+      if (!cell.walls[3]) {
+        add.push([-maze.len, 0]);
+      }
+
+      for (var i = 0; i < add.length; i++) {
+        x = cell.x + add[i][0];
+        y = cell.y + add[i][1];
+        var neighborCell = this.findCell(x, y);
+        if (inBounds() && neighborCell && !neighborCell.explored) {
+          neighborCell.parent = cell;
+          neighbors.push(neighborCell);
+        }
+      }
+      if (neighbors.length > 0) {
+        return neighbors;
+      }
+    }
+  }, {
+    key: "findCell",
+    value: function findCell(x, y) {
+      var maze = this.maze;
+      for (var i = 0; i < maze.cells.length; i++) {
+        for (var j = 0; j < maze.cells[0].length; j++) {
+          var cell = maze.cells[i][j];
+          if (cell.x === x && cell.y === y) {
+            return cell;
+          }
+        }
+      }
+      return null;
+    }
+  }, {
+    key: "algorithm",
+    value: function algorithm() {
+      var maze = this.maze;
+      if (this.set.length > 0) {
+        this.set.sort(function (a, b) {
+          return b.distance - a.distance;
+        });
+        this.current = this.set.pop();
+        this.current.explored = true;
+        var neighbors = this.adjacentCells(this.current);
+        for (var i = 0; i < neighbors.length; i++) {
+          var dist = this.current.distance + Math.sqrt(Math.pow(neighbors[i].x - this.current.x, 2) + Math.pow(neighbors[i].y - this.current.y, 2));
+          if (dist < neighbors[i].distance) {
+            neighbors[i].distance = dist;
+          }
+        }
+      } else {
+        this.maze.solving = false;
+        this.maze.solved = true;
+      }
+    }
+  }, {
+    key: "neighborExist",
+    value: function neighborExist(neighbor, list) {
+      for (var i = 0; i < list.length; i++) {
+        var cell = list[i];
+        if (cell.x === neighbor.x && cell.y === neighbor.y) {
+          return cell;
+        }
+      }
+      return false;
+    }
+  }, {
+    key: "path",
+    value: function path() {
+      if (this.pathfinder === this.start) {
+        this.maze.solving = false;
+        this.maze.solved = true;
+      } else if (!this.pathfinder) {
+        this.pathfinder = this.finish.parent;
+      } else {
+        this.pathfinder.path = true;
+        this.pathfinder = this.pathfinder.parent;
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw(ctx) {
+      var maze = this.maze;
+      if (this.current === this.finish) {
+        this.path();
+      } else {
+        this.algorithm();
+      }
+      maze.cells.forEach(function (row) {
+        row.forEach(function (cell) {
+          cell.draw(ctx);
+        });
+      });
+      this.current.highlight(ctx);
+      this.start.highlightStart(ctx);
+      this.finish.highlightEnd(ctx);
+      ctx.strokeRect(0, 0, maze.w, maze.h);
+    }
+  }]);
+
+  return SolveDijkstra;
+}();
+
+module.exports = SolveDijkstra;
 
 /***/ })
 /******/ ]);

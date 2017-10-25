@@ -101,6 +101,7 @@ class SolveDFS {
     if (this.current === this.finish) {
       this.path();
     }
+    ctx.strokeRect(0, 0, maze.w, maze.h);
   }
 
 

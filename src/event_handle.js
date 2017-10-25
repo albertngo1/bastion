@@ -5,6 +5,7 @@ const GenerateKruskal = require('./algos//kruskal/kruskal.js');
 const SolveDFS = require('./algos/dfs_solve.js');
 const SolveBFS = require('./algos/bfs_solve.js');
 const SolveAStar = require('./algos/a_star_solve.js');
+const SolveDijkstra = require('./algos/dijkstra_solve.js');
 const Maze = require('./maze.js');
 
 
@@ -87,6 +88,14 @@ const eventHandle = (ctx, canvas) => {
     }
   });
 
+  $("#dijkstra-solve").click(() => {
+    if (maezr.generator && !maezr.solved) {
+      $("button").prop("disabled", true);
+      let solve = new SolveAStar(maezr);
+      maezr.solver = solve;
+      maezr.solving = true;
+    }
+  });
 
 
 }

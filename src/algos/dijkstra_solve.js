@@ -1,16 +1,18 @@
-class SolveAStar {
+class SolveDijkstra {
 
   constructor(maze) {
     this.maze = maze;
 
     this.start = maze.cells[0][0];
-    this.start.f = 0;
-    this.start.g = 0;
-    this.start.h = 0;
     this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
+    this.set = [];
+    maze.cells.forEach(cell => {
+      cell.distance = 1/0;
+      cell.parent = null;
+      this.set.push(cell);
+    })
 
-    this.open = [this.start];
-    this.closed = [];
+    this.start.distance = 0;
   }
 
   adjacentCells(cell) {
@@ -70,36 +72,15 @@ class SolveAStar {
 
   algorithm() {
     const maze = this.maze;
-    if (this.current !== this.finish) {
-      if (this.open.length > 0) {
-        this.open.sort((a,b) => b.f - a.f);
-        this.current = this.open.pop();
-        this.current.explored = true;
-        const neighbors = this.adjacentCells(this.current);
-        if (neighbors) {
-          for (let i=0; i < neighbors.length; i++) {
-            if (neighbors[i] === this.finish) {
-              this.current = neighbors[i];
-              return;
-            }
-            neighbors[i].g = this.current.g + Math.sqrt(Math.pow(neighbors[i].x - this.current.x, 2) + (neighbors[i].y - this.current.y, 2));
-            neighbors[i].h = Math.abs(neighbors[i].x - this.finish.x) + Math.abs(neighbors[i].y - this.finish.y);
-            neighbors[i].f = neighbors[i].g + neighbors[i].h;
-            const openListCell = this.neighborExist(neighbors[i], this.open);
-            const closedListCell = this.neighborExist(neighbors[i], this.closed);
-            if (openListCell) {
-              if (neighbors[i].f > openListCell.f) {
-
-              }
-            } else if (closedListCell) {
-              if (neighbors[i].f > openListCell.f) {
-
-              }
-            } else {
-              this.open.push(neighbors[i]);
-            }
-            this.closed.push(this.current);
-          }
+    if (this.set.length > 0) {
+      this.set.sort((a,b) => b.distance - a.distance);
+      this.current = this.set.pop();
+      this.current.explored = true;
+      const neighbors = this.adjacentCells(this.current);
+      for (let i=0; i < neighbors.length; i++) {
+        let dist = this.current.distance + Math.sqrt(Math.pow(neighbors[i].x - this.current.x, 2) + Math.pow(neighbors[i].y - this.current.y, 2))
+        if (dist < neighbors[i].distance) {
+          neighbors[i].distance = dist;
         }
       }
     } else {
@@ -150,4 +131,4 @@ class SolveAStar {
 
 }
 
-module.exports = SolveAStar;
+module.exports = SolveDijkstra;
