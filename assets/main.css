@@ -3,7 +3,6 @@
   cursor: default;
   font-weight: bolder;
   font-size: 70px;
-  margin-left: 20px;
 }
 
 #name {
@@ -26,7 +25,8 @@ section {
 }
 body {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   height: 100%;
   width: 100%;
   font-family: 'Roboto';
@@ -34,7 +34,7 @@ body {
 
 .section-wrap {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .information-details {
@@ -52,14 +52,21 @@ body {
 }
 
 #informational-box {
-  margin-right: 100px;
-  margin-left: 150px;
+  margin-right: 50px;
+  margin-left: 100px;
   border: 4px solid black;
-  width: 210px;
-  height: 170px;
+  max-width: 230px;
   padding: 3px;
   border-radius: 3px;
-  height: auto; 
+  max-height: 520px;
+}
+
+.title-wrapper {
+  display: flex;
+  height: auto;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-right: 3%;
 }
 
 .generator-btns {
