@@ -51,6 +51,21 @@ if (next) {
 
 #### Breadth-First-Search
 
+BFS visits all adjacent cells of the current cell before making the subsequent adjacent cells each be the next current cell to repeat the process.
+
+```javascript
+const neighbors = this.adjacentCells(this.current);
+if (neighbors) {
+  neighbors.forEach(neighbor => {
+    neighbor.parent = this.current;
+    this.queue.push(neighbor);
+  })
+}
+let next = this.queue.shift();
+next.explored = true;
+this.current = next;
+```
+
 #### Prim's Algorithm
 
 Prim's application for maze generation revolves around selecting unexplored "neighbors" of already explored paths (or cells) of the maze. These "neighbors", labeled as the frontier cells, are selected at random carving a path for the maze.
@@ -67,7 +82,11 @@ Sidewinder starts from the top left and finishes at the bottom right. It works a
 
 #### A* Search Algorithm
 
+A* search takes a heuristic approach in finding the final destination. There are three properties that each cell has: `g` which is the distance from the current cell's `g` plus the distance between the next cell to the current cell. `h` is the distance between next cell to the final destination. `g` and `h` are summed to give `f`, for which the lowest `f` is selected from an array of unexplored cells.
+
 #### Dijkstra's Algorithm
+
+Dijkstra's algorithm has a similar approach to A*, however it uses the distances between the current cell and its neighbor cells to determine the path to go. This algorithm may not be visualized to its fullest extent due to the neighbor cells between equidistant to the current cell.
 
 ## Tech
 
