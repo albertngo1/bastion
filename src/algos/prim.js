@@ -121,15 +121,58 @@ class GeneratePrim {
       maze.cells[y][x].visited = true;
       maze.cells[ny][nx].visited = true;
 
-      this.mark(x, y)
+      this.mark(x, y);
     } else {
       this.maze.generating = false;
     }
   }
 
+  fastAlgo() {
+    const maze = this.maze;
+    while (this.frontier.length > 0) {
+      const index = Math.floor(Math.random() * this.frontier.length);
+      const randFrontier = this.frontier[index];
+
+      const x = randFrontier[0];
+      const y = randFrontier[1];
+      this.frontier.splice(index, 1);
+
+      const neighbors = this.neighbors(x, y);
+
+      const randNeighbor = Math.floor(Math.random() * neighbors.length);
+      const nx = neighbors[randNeighbor][0];
+      const ny = neighbors[randNeighbor][1];
+      const dir = this.direction(x, y, nx, ny);
+
+      if (dir === "N") {
+        maze.cells[y][x].walls[0] = false;
+        maze.cells[ny][nx].walls[2] = false;
+      } else if (dir === "S") {
+        maze.cells[y][x].walls[2] = false;
+        maze.cells[ny][nx].walls[0] = false;
+      } else if (dir === "E") {
+        maze.cells[y][x].walls[1] = false;
+        maze.cells[ny][nx].walls[3] = false;
+      } else {
+        maze.cells[y][x].walls[3] = false;
+        maze.cells[ny][nx].walls[1] = false;
+      }
+      maze.cells[y][x].visited = true;
+      maze.cells[ny][nx].visited = true;
+
+      this.mark(x, y);
+    }
+    maze.generating = false;
+
+  }
+
   draw(ctx) {
     const maze = this.maze;
-    this.algorithm();
+    if (maze.fast === true) {
+      this.fastAlgo();
+    } else {
+      this.algorithm();
+    }
     maze.cells.forEach( row => {
       row.forEach( cell => {
         cell.draw(ctx);

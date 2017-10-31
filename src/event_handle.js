@@ -25,18 +25,30 @@ const eventHandle = (ctx, canvas) => {
     maezr.generating = true;
   }
 
+  function fastAlgoHelper(maezr) {
+    let txt = $("#instant-toggle-text").text();
+
+    if (txt === "ON") {
+      maezr.fast = true;
+    }
+  }
+
   $("#instant-gen").click(() => {
-    eventHelper();
-    let gen = new GenerateDFS(maezr);
-    maezr.generator = gen;
-    maezr.generator.fast = true;
-    maezr.begin();
-    });
+    let txt = $("#instant-toggle-text").text();
+    if (txt === "OFF") {
+      $("#instant-toggle-text").text("ON");
+    } else {
+      $("#instant-toggle-text").text("OFF");
+    }
+
+  });
 
   $("#dfs-gen").click(() => {
     eventHelper();
     let gen = new GenerateDFS(maezr);
     maezr.generator = gen;
+    fastAlgoHelper(maezr);
+    $("#dfs-gen").addClass("button-on");
     maezr.begin();
   });
 
@@ -44,6 +56,8 @@ const eventHandle = (ctx, canvas) => {
     eventHelper();
     let gen = new GeneratePrim(maezr);
     maezr.generator = gen;
+    fastAlgoHelper(maezr);
+    $("#prim-gen").addClass("button-on");
     maezr.begin();
   });
 
@@ -51,6 +65,8 @@ const eventHandle = (ctx, canvas) => {
     eventHelper();
     let gen = new GenerateSidewinder(maezr);
     maezr.generator = gen;
+    fastAlgoHelper(maezr);
+    $("#sidewinder-gen").addClass("button-on");
     maezr.begin();
   });
 
@@ -58,6 +74,8 @@ const eventHandle = (ctx, canvas) => {
     eventHelper();
     let gen = new GenerateKruskal(maezr);
     maezr.generator = gen;
+    fastAlgoHelper(maezr);
+    $("#kruskal-gen").addClass("button-on");
     maezr.begin();
   });
 
@@ -65,6 +83,7 @@ const eventHandle = (ctx, canvas) => {
     if (maezr.generator && !maezr.solved) {
       $("button").prop("disabled", true);
       let solve = new SolveDFS(maezr);
+      $("#dfs-solve").addClass("button-on");
       maezr.solver = solve;
       maezr.solving = true;
     }
@@ -74,6 +93,7 @@ const eventHandle = (ctx, canvas) => {
     if (maezr.generator && !maezr.solved) {
       $("button").prop("disabled", true);
       let solve = new SolveBFS(maezr);
+      $("#bfs-solve").addClass("button-on");
       maezr.solver = solve;
       maezr.solving = true;
     }
@@ -83,6 +103,7 @@ const eventHandle = (ctx, canvas) => {
     if (maezr.generator && !maezr.solved) {
       $("button").prop("disabled", true);
       let solve = new SolveAStar(maezr);
+      $("#astar-solve").addClass("button-on");
       maezr.solver = solve;
       maezr.solving = true;
     }
@@ -92,6 +113,7 @@ const eventHandle = (ctx, canvas) => {
     if (maezr.generator && !maezr.solved) {
       $("button").prop("disabled", true);
       let solve = new SolveAStar(maezr);
+      $("#dijkstra-solve").addClass("button-on");
       maezr.solver = solve;
       maezr.solving = true;
     }

@@ -48,6 +48,7 @@ class Maze {
         }
         if (!this.generating && !this.solving) {
           $("button").prop("disabled", false);
+          $(".generator-btns button").removeClass("button-on");
         }
       }, 1000 / this.frameRate)
     } else {

@@ -248,18 +248,29 @@ var eventHandle = function eventHandle(ctx, canvas) {
     maezr.generating = true;
   }
 
+  function fastAlgoHelper(maezr) {
+    var txt = $("#instant-toggle-text").text();
+
+    if (txt === "ON") {
+      maezr.fast = true;
+    }
+  }
+
   $("#instant-gen").click(function () {
-    eventHelper();
-    var gen = new GenerateDFS(maezr);
-    maezr.generator = gen;
-    maezr.generator.fast = true;
-    maezr.begin();
+    var txt = $("#instant-toggle-text").text();
+    if (txt === "OFF") {
+      $("#instant-toggle-text").text("ON");
+    } else {
+      $("#instant-toggle-text").text("OFF");
+    }
   });
 
   $("#dfs-gen").click(function () {
     eventHelper();
     var gen = new GenerateDFS(maezr);
     maezr.generator = gen;
+    fastAlgoHelper(maezr);
+    $("#dfs-gen").addClass("button-on");
     maezr.begin();
   });
 
@@ -267,6 +278,8 @@ var eventHandle = function eventHandle(ctx, canvas) {
     eventHelper();
     var gen = new GeneratePrim(maezr);
     maezr.generator = gen;
+    fastAlgoHelper(maezr);
+    $("#prim-gen").addClass("button-on");
     maezr.begin();
   });
 
@@ -274,6 +287,8 @@ var eventHandle = function eventHandle(ctx, canvas) {
     eventHelper();
     var gen = new GenerateSidewinder(maezr);
     maezr.generator = gen;
+    fastAlgoHelper(maezr);
+    $("#sidewinder-gen").addClass("button-on");
     maezr.begin();
   });
 
@@ -281,6 +296,8 @@ var eventHandle = function eventHandle(ctx, canvas) {
     eventHelper();
     var gen = new GenerateKruskal(maezr);
     maezr.generator = gen;
+    fastAlgoHelper(maezr);
+    $("#kruskal-gen").addClass("button-on");
     maezr.begin();
   });
 
@@ -288,6 +305,7 @@ var eventHandle = function eventHandle(ctx, canvas) {
     if (maezr.generator && !maezr.solved) {
       $("button").prop("disabled", true);
       var solve = new SolveDFS(maezr);
+      $("#dfs-solve").addClass("button-on");
       maezr.solver = solve;
       maezr.solving = true;
     }
@@ -297,6 +315,7 @@ var eventHandle = function eventHandle(ctx, canvas) {
     if (maezr.generator && !maezr.solved) {
       $("button").prop("disabled", true);
       var solve = new SolveBFS(maezr);
+      $("#bfs-solve").addClass("button-on");
       maezr.solver = solve;
       maezr.solving = true;
     }
@@ -306,6 +325,7 @@ var eventHandle = function eventHandle(ctx, canvas) {
     if (maezr.generator && !maezr.solved) {
       $("button").prop("disabled", true);
       var solve = new SolveAStar(maezr);
+      $("#astar-solve").addClass("button-on");
       maezr.solver = solve;
       maezr.solving = true;
     }
@@ -315,6 +335,7 @@ var eventHandle = function eventHandle(ctx, canvas) {
     if (maezr.generator && !maezr.solved) {
       $("button").prop("disabled", true);
       var solve = new SolveAStar(maezr);
+      $("#dijkstra-solve").addClass("button-on");
       maezr.solver = solve;
       maezr.solving = true;
     }
@@ -452,7 +473,7 @@ var GenerateDFS = function () {
     key: 'draw',
     value: function draw(ctx) {
       var maze = this.maze;
-      if (this.fast === true) {
+      if (maze.fast === true) {
         this.fastAlgo();
       } else {
         this.algorithm();
@@ -546,11 +567,39 @@ var GenerateSidewinder = function () {
       this.currentIdx.x += 1;
     }
   }, {
+    key: 'fastAlgo',
+    value: function fastAlgo() {
+      var maze = this.maze;
+      var height = maze.cells.length;
+      var width = maze.cells[0].length;
+      var runStart = void 0;
+      var cell = void 0;
+
+      for (var y = 0; y < height; y++) {
+        runStart = 0;
+        for (var x = 0; x < width; x++) {
+          if (y > 0 && (x + 1 === width || Math.random() <= .5)) {
+            cell = runStart + Math.floor(Math.random() * (x - runStart + 1));
+            maze.cells[y][cell].removeWalls(maze.cells[y - 1][cell]);
+            runStart = x + 1;
+          } else if (x + 1 < width) {
+            maze.cells[y][x].removeWalls(maze.cells[y][x + 1]);
+          }
+          maze.cells[y][x].visited = true;
+        }
+      }
+      maze.generating = false;
+    }
+  }, {
     key: 'draw',
     value: function draw(ctx) {
       var maze = this.maze;
-      if (this.currentIdx.y < maze.cells.length) {
-        this.algorithm();
+      if (maze.fast === true) {
+        this.fastAlgo();
+      } else {
+        if (this.currentIdx.y < maze.cells.length) {
+          this.algorithm();
+        }
       }
       maze.cells.forEach(function (row) {
         row.forEach(function (cell) {
@@ -565,22 +614,6 @@ var GenerateSidewinder = function () {
 }();
 
 module.exports = GenerateSidewinder;
-
-// let runStart;
-// let cell;
-//
-// for (let y=0; y < height; y++) {
-//   runStart = 0;
-//   for (let x=0; x < width; x++) {
-//     if (y > 0 && (x + 1 === width || Math.random() <= .5)) {
-//       cell = runStart + Math.floor(Math.random() * (x - runStart + 1));
-//       maze.cells[y][cell].removeWalls(maze.cells[y - 1][cell]);
-//       runStart = x + 1;
-//     } else if (x + 1 < width) {
-//       maze.cells[y][x].removeWalls(maze.cells[y][x + 1]);
-//     }
-//   }
-// }
 
 /***/ }),
 /* 5 */
@@ -729,10 +762,53 @@ var GeneratePrim = function () {
       }
     }
   }, {
+    key: "fastAlgo",
+    value: function fastAlgo() {
+      var maze = this.maze;
+      while (this.frontier.length > 0) {
+        var index = Math.floor(Math.random() * this.frontier.length);
+        var randFrontier = this.frontier[index];
+
+        var x = randFrontier[0];
+        var y = randFrontier[1];
+        this.frontier.splice(index, 1);
+
+        var neighbors = this.neighbors(x, y);
+
+        var randNeighbor = Math.floor(Math.random() * neighbors.length);
+        var nx = neighbors[randNeighbor][0];
+        var ny = neighbors[randNeighbor][1];
+        var dir = this.direction(x, y, nx, ny);
+
+        if (dir === "N") {
+          maze.cells[y][x].walls[0] = false;
+          maze.cells[ny][nx].walls[2] = false;
+        } else if (dir === "S") {
+          maze.cells[y][x].walls[2] = false;
+          maze.cells[ny][nx].walls[0] = false;
+        } else if (dir === "E") {
+          maze.cells[y][x].walls[1] = false;
+          maze.cells[ny][nx].walls[3] = false;
+        } else {
+          maze.cells[y][x].walls[3] = false;
+          maze.cells[ny][nx].walls[1] = false;
+        }
+        maze.cells[y][x].visited = true;
+        maze.cells[ny][nx].visited = true;
+
+        this.mark(x, y);
+      }
+      maze.generating = false;
+    }
+  }, {
     key: "draw",
     value: function draw(ctx) {
       var maze = this.maze;
-      this.algorithm();
+      if (maze.fast === true) {
+        this.fastAlgo();
+      } else {
+        this.algorithm();
+      }
       maze.cells.forEach(function (row) {
         row.forEach(function (cell) {
           cell.draw(ctx);
@@ -861,10 +937,53 @@ var GenerateKruskal = function () {
       }
     }
   }, {
+    key: 'fastAlgo',
+    value: function fastAlgo() {
+      var maze = this.maze;
+      while (this.edges.length > 0) {
+        var poppedEdge = this.edges.pop();
+        var x = poppedEdge[0];
+        var y = poppedEdge[1];
+        var dir = poppedEdge[2];
+
+        var nx = x + this.DX[dir];
+        var ny = y + this.DY[dir];
+
+        var l = this.maze.len;
+        var set1 = this.sets[y / l][x / l];
+        var set2 = this.sets[ny / l][nx / l];
+        if (!set1.connected(set2)) {
+
+          set1.connect(set2);
+
+          if (dir === "N") {
+            maze.cells[y / l][x / l].walls[0] = false;
+            maze.cells[ny / l][nx / l].walls[2] = false;
+          } else if (dir === "S") {
+            maze.cells[y / l][x / l].walls[2] = false;
+            maze.cells[ny / l][nx / l].walls[0] = false;
+          } else if (dir === "E") {
+            maze.cells[y / l][x / l].walls[1] = false;
+            maze.cells[ny / l][nx / l].walls[3] = false;
+          } else {
+            maze.cells[y / l][x / l].walls[3] = false;
+            maze.cells[ny / l][nx / l].walls[1] = false;
+          }
+        }
+        maze.cells[y / l][x / l].visited = true;
+        maze.cells[ny / l][nx / l].visited = true;
+      }
+      maze.generating = false;
+    }
+  }, {
     key: 'draw',
     value: function draw(ctx) {
       var maze = this.maze;
-      this.algorithm();
+      if (maze.fast === true) {
+        this.fastAlgo();
+      } else {
+        this.algorithm();
+      }
       maze.cells.forEach(function (row) {
         row.forEach(function (cell) {
           cell.draw(ctx);
@@ -1587,6 +1706,7 @@ var Maze = function () {
           }
           if (!_this.generating && !_this.solving) {
             $("button").prop("disabled", false);
+            $(".generator-btns button").removeClass("button-on");
           }
         }, 1000 / this.frameRate);
       } else {

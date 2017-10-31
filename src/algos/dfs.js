@@ -110,7 +110,7 @@ class GenerateDFS {
 
   draw(ctx) {
     const maze = this.maze;
-    if (this.fast === true) {
+    if (maze.fast === true) {
       this.fastAlgo();
     } else {
       this.algorithm();

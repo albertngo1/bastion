@@ -55,10 +55,37 @@ class GenerateSidewinder {
     this.currentIdx.x += 1;
   }
 
+  fastAlgo() {
+    const maze = this.maze;
+    const height = maze.cells.length;
+    const width = maze.cells[0].length;
+    let runStart;
+    let cell;
+
+    for (let y=0; y < height; y++) {
+      runStart = 0;
+      for (let x=0; x < width; x++) {
+        if (y > 0 && (x + 1 === width || Math.random() <= .5)) {
+          cell = runStart + Math.floor(Math.random() * (x - runStart + 1));
+          maze.cells[y][cell].removeWalls(maze.cells[y - 1][cell]);
+          runStart = x + 1;
+        } else if (x + 1 < width) {
+          maze.cells[y][x].removeWalls(maze.cells[y][x + 1]);
+        }
+        maze.cells[y][x].visited = true;
+      }
+    }
+    maze.generating = false;
+  }
+
   draw(ctx) {
     const maze = this.maze;
-    if (this.currentIdx.y < maze.cells.length) {
-      this.algorithm();
+    if (maze.fast === true) {
+      this.fastAlgo();
+    } else {
+        if (this.currentIdx.y < maze.cells.length) {
+          this.algorithm();
+        }
     }
     maze.cells.forEach( row => {
       row.forEach( cell => {
@@ -72,20 +99,3 @@ class GenerateSidewinder {
 }
 
 module.exports = GenerateSidewinder;
-
-
-    // let runStart;
-    // let cell;
-    //
-    // for (let y=0; y < height; y++) {
-    //   runStart = 0;
-    //   for (let x=0; x < width; x++) {
-    //     if (y > 0 && (x + 1 === width || Math.random() <= .5)) {
-    //       cell = runStart + Math.floor(Math.random() * (x - runStart + 1));
-    //       maze.cells[y][cell].removeWalls(maze.cells[y - 1][cell]);
-    //       runStart = x + 1;
-    //     } else if (x + 1 < width) {
-    //       maze.cells[y][x].removeWalls(maze.cells[y][x + 1]);
-    //     }
-    //   }
-    // }

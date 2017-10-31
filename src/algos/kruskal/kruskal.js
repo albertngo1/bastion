@@ -96,9 +96,52 @@ class GenerateKruskal {
     }
   }
 
+  fastAlgo() {
+    const maze = this.maze;
+    while (this.edges.length > 0) {
+      let poppedEdge = this.edges.pop();
+      let x = poppedEdge[0];
+      let y = poppedEdge[1];
+      let dir = poppedEdge[2];
+
+      let nx = x + this.DX[dir];
+      let ny = y + this.DY[dir];
+
+      let l = this.maze.len;
+      let set1 = this.sets[y / l][x / l];
+      let set2 = this.sets[ny / l][nx / l];
+      if (!set1.connected(set2)) {
+
+        set1.connect(set2);
+
+        if (dir === "N") {
+          maze.cells[y / l][x / l].walls[0] = false;
+          maze.cells[ny / l][nx / l].walls[2] = false;
+        } else if (dir === "S") {
+          maze.cells[y / l][x / l].walls[2] = false;
+          maze.cells[ny / l][nx / l].walls[0] = false;
+        } else if (dir === "E") {
+          maze.cells[y / l][x / l].walls[1] = false;
+          maze.cells[ny / l][nx / l].walls[3] = false;
+        } else {
+          maze.cells[y / l][x / l].walls[3] = false;
+          maze.cells[ny / l][nx / l].walls[1] = false;
+        }
+
+      }
+      maze.cells[y / l][x/ l].visited = true;
+      maze.cells[ny / l][nx/ l].visited = true;
+    }
+    maze.generating = false;
+  }
+
   draw(ctx) {
     const maze = this.maze;
-    this.algorithm();
+    if (maze.fast === true) {
+      this.fastAlgo();
+    } else {
+      this.algorithm();
+    }
     maze.cells.forEach( row => {
       row.forEach( cell => {
         cell.draw(ctx);

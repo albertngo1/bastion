@@ -44,6 +44,7 @@ body {
   margin-top: 5px;
   font-size: 20px;
   margin-bottom: 5px;
+  user-select: none;
 }
 
 .information-content {
@@ -81,6 +82,7 @@ body {
   border: 1px solid black;
   padding: 3px;
   border-radius: 3px;
+  user-select: none;
 }
 .generator-btns > button:hover {
   background-color: rgb(212, 212, 212);
@@ -104,6 +106,7 @@ ul > li {
   padding: 3px;
   display: flex;
   justify-content: center;
+  user-select: none;
 }
 ul > li:hover {
   background-color: rgb(212, 212, 212);
@@ -113,4 +116,13 @@ footer div {
   user-select: none;
   cursor: default;
   margin-left: 15px;
+}
+
+#instant-toggle-text {
+  font-weight: bolder;
+  color: rgb(0, 10, 255);
+}
+
+.button-on {
+  background-color: rgb(212, 212, 212);
 }
