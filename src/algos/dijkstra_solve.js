@@ -6,10 +6,12 @@ class SolveDijkstra {
     this.start = maze.cells[0][0];
     this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
     this.set = [];
-    maze.cells.forEach(cell => {
-      cell.distance = 1/0;
-      cell.parent = null;
-      this.set.push(cell);
+    maze.cells.forEach(row => {
+      row.forEach(cell => {
+        cell.distance = 1/0;
+        cell.parent = null;
+        this.set.push(cell);
+      })
     })
 
     this.start.distance = 0;
@@ -29,7 +31,6 @@ class SolveDijkstra {
     let x;
     let y;
     const add = [];
-
     if (!cell.walls[0]) {
       add.push([0, -maze.len])
     }
@@ -52,9 +53,7 @@ class SolveDijkstra {
         neighbors.push(neighborCell);
       }
     }
-    if (neighbors.length > 0) {
-      return neighbors;
-    }
+    return neighbors;
   }
 
   findCell(x, y) {

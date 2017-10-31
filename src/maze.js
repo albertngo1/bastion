@@ -38,8 +38,6 @@ class Maze {
         requestAnimationFrame(this.animate.bind(this));
         if (this.generating) {
           this.draw();
-        } else {
-          this.generator = null;
         }
         if (this.solving) {
           this.solve();

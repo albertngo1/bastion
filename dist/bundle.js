@@ -145,16 +145,11 @@ var Cell = function () {
       if (this.visited) {
         ctx.fillStyle = "pink";
         ctx.fillRect(x, y, this.len, this.len);
-      } else {
-        ctx.fillStyle = "black";
-        ctx.fillRect(x, y, this.len, this.len);
-      }
-
-      if (this.in) {
-        ctx.fillStyle = "pink";
-        ctx.fillRect(x, y, this.len, this.len);
       } else if (this.frontier) {
         ctx.fillStyle = "teal";
+        ctx.fillRect(x, y, this.len, this.len);
+      } else {
+        ctx.fillStyle = "black";
         ctx.fillRect(x, y, this.len, this.len);
       }
 
@@ -235,6 +230,8 @@ var Maze = __webpack_require__(12);
 var eventHandle = function eventHandle(ctx, canvas) {
 
   var maezr = new Maze(canvas);
+  var gen = void 0;
+  var solve = void 0;
 
   function eventHelper() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -256,6 +253,23 @@ var eventHandle = function eventHandle(ctx, canvas) {
     }
   }
 
+  function resetMaze(maze) {
+    maze.cells.forEach(function (row) {
+      row.forEach(function (cell) {
+        cell.frontier = false;
+        cell.explored = false;
+        cell.path = false;
+      });
+    });
+  }
+
+  function solveHelper(maze, id) {
+    $("button").prop("disabled", true);
+    $(id).addClass("button-on");
+    maze.solver = solve;
+    maze.solving = true;
+  }
+
   $("#instant-gen").click(function () {
     var txt = $("#instant-toggle-text").text();
     if (txt === "OFF") {
@@ -267,7 +281,7 @@ var eventHandle = function eventHandle(ctx, canvas) {
 
   $("#dfs-gen").click(function () {
     eventHelper();
-    var gen = new GenerateDFS(maezr);
+    gen = new GenerateDFS(maezr);
     maezr.generator = gen;
     fastAlgoHelper(maezr);
     $("#dfs-gen").addClass("button-on");
@@ -276,7 +290,7 @@ var eventHandle = function eventHandle(ctx, canvas) {
 
   $("#prim-gen").click(function () {
     eventHelper();
-    var gen = new GeneratePrim(maezr);
+    gen = new GeneratePrim(maezr);
     maezr.generator = gen;
     fastAlgoHelper(maezr);
     $("#prim-gen").addClass("button-on");
@@ -285,7 +299,7 @@ var eventHandle = function eventHandle(ctx, canvas) {
 
   $("#sidewinder-gen").click(function () {
     eventHelper();
-    var gen = new GenerateSidewinder(maezr);
+    gen = new GenerateSidewinder(maezr);
     maezr.generator = gen;
     fastAlgoHelper(maezr);
     $("#sidewinder-gen").addClass("button-on");
@@ -294,7 +308,7 @@ var eventHandle = function eventHandle(ctx, canvas) {
 
   $("#kruskal-gen").click(function () {
     eventHelper();
-    var gen = new GenerateKruskal(maezr);
+    gen = new GenerateKruskal(maezr);
     maezr.generator = gen;
     fastAlgoHelper(maezr);
     $("#kruskal-gen").addClass("button-on");
@@ -302,42 +316,42 @@ var eventHandle = function eventHandle(ctx, canvas) {
   });
 
   $("#dfs-solve").click(function () {
-    if (maezr.generator && !maezr.solved) {
-      $("button").prop("disabled", true);
-      var solve = new SolveDFS(maezr);
-      $("#dfs-solve").addClass("button-on");
-      maezr.solver = solve;
-      maezr.solving = true;
+    if (maezr.generator) {
+      if (maezr.solved) {
+        resetMaze(maezr);
+      }
+      solve = new SolveDFS(maezr);
+      solveHelper(maezr, "#dfs-solve");
     }
   });
 
   $("#bfs-solve").click(function () {
-    if (maezr.generator && !maezr.solved) {
-      $("button").prop("disabled", true);
-      var solve = new SolveBFS(maezr);
-      $("#bfs-solve").addClass("button-on");
-      maezr.solver = solve;
-      maezr.solving = true;
+    if (maezr.generator) {
+      if (maezr.solved) {
+        resetMaze(maezr);
+      }
+      solve = new SolveBFS(maezr);
+      solveHelper(maezr, "#bfs-solve");
     }
   });
 
   $("#astar-solve").click(function () {
-    if (maezr.generator && !maezr.solved) {
-      $("button").prop("disabled", true);
-      var solve = new SolveAStar(maezr);
-      $("#astar-solve").addClass("button-on");
-      maezr.solver = solve;
-      maezr.solving = true;
+    if (maezr.generator) {
+      if (maezr.solved) {
+        resetMaze(maezr);
+      }
+      solve = new SolveAStar(maezr);
+      solveHelper(maezr, "#astar-solve");
     }
   });
 
   $("#dijkstra-solve").click(function () {
-    if (maezr.generator && !maezr.solved) {
-      $("button").prop("disabled", true);
-      var solve = new SolveAStar(maezr);
-      $("#dijkstra-solve").addClass("button-on");
-      maezr.solver = solve;
-      maezr.solving = true;
+    if (maezr.generator) {
+      if (maezr.solved) {
+        resetMaze(maezr);
+      }
+      solve = new SolveDijkstra(maezr);
+      solveHelper(maezr, "#dijkstra-solve");
     }
   });
 };
@@ -660,7 +674,7 @@ var GeneratePrim = function () {
           y = i * maze.len;
           maze.cells[i].push(new Cell(x, y, maze.len));
           maze.cells[i][j].frontier = false;
-          maze.cells[i][j].in = false;
+          maze.cells[i][j].visited = false;
         }
       }
     }
@@ -668,7 +682,7 @@ var GeneratePrim = function () {
     key: "addFrontier",
     value: function addFrontier(x, y) {
       var maze = this.maze;
-      if (x >= 0 && y >= 0 && x < maze.cells[0].length && y < maze.cells.length && maze.cells[y][x].frontier === false && maze.cells[y][x].in === false) {
+      if (x >= 0 && y >= 0 && x < maze.cells[0].length && y < maze.cells.length && maze.cells[y][x].frontier === false && maze.cells[y][x].visited === false) {
         maze.cells[y][x].frontier = true;
         this.frontier.push([x, y]);
       }
@@ -677,7 +691,7 @@ var GeneratePrim = function () {
     key: "mark",
     value: function mark(x, y) {
       var maze = this.maze;
-      maze.cells[y][x].in = true;
+      maze.cells[y][x].visited = true;
       this.addFrontier(x + 1, y);
       this.addFrontier(x - 1, y);
       this.addFrontier(x, y + 1);
@@ -705,16 +719,16 @@ var GeneratePrim = function () {
       var maze = this.maze;
       var neighbors = [];
 
-      if (x > 0 && maze.cells[y][x - 1].in) {
+      if (x > 0 && maze.cells[y][x - 1].visited) {
         neighbors.push([x - 1, y]);
       };
-      if (x + 1 < maze.cells[0].length && maze.cells[y][x + 1].in) {
+      if (x + 1 < maze.cells[0].length && maze.cells[y][x + 1].visited) {
         neighbors.push([x + 1, y]);
       };
-      if (y > 0 && maze.cells[y - 1][x].in) {
+      if (y > 0 && maze.cells[y - 1][x].visited) {
         neighbors.push([x, y - 1]);
       };
-      if (y + 1 < maze.cells.length && maze.cells[y + 1][x].in) {
+      if (y + 1 < maze.cells.length && maze.cells[y + 1][x].visited) {
         neighbors.push([x, y + 1]);
       };
 
@@ -1499,10 +1513,12 @@ var SolveDijkstra = function () {
     this.start = maze.cells[0][0];
     this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
     this.set = [];
-    maze.cells.forEach(function (cell) {
-      cell.distance = 1 / 0;
-      cell.parent = null;
-      _this.set.push(cell);
+    maze.cells.forEach(function (row) {
+      row.forEach(function (cell) {
+        cell.distance = 1 / 0;
+        cell.parent = null;
+        _this.set.push(cell);
+      });
     });
 
     this.start.distance = 0;
@@ -1524,7 +1540,6 @@ var SolveDijkstra = function () {
       var x = void 0;
       var y = void 0;
       var add = [];
-
       if (!cell.walls[0]) {
         add.push([0, -maze.len]);
       }
@@ -1547,9 +1562,7 @@ var SolveDijkstra = function () {
           neighbors.push(neighborCell);
         }
       }
-      if (neighbors.length > 0) {
-        return neighbors;
-      }
+      return neighbors;
     }
   }, {
     key: "findCell",
@@ -1696,8 +1709,6 @@ var Maze = function () {
           requestAnimationFrame(_this.animate.bind(_this));
           if (_this.generating) {
             _this.draw();
-          } else {
-            _this.generator = null;
           }
           if (_this.solving) {
             _this.solve();
