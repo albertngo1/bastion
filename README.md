@@ -1,9 +1,9 @@
-# Maezr
+# Bastion
 
-[Live](https://albertngo1.github.io/maezr/)
+[Live](https://albertngo1.github.io/bastion/)
 
 ## Background
-`Maezr` is a JavaScript visualization project that utilizes many popular graph algorithms to generate and solve mazes.
+`Bastion` is a JavaScript visualization project that utilizes many popular graph algorithms to generate and solve mazes.
 
 All of the different options are randomly generating and solving.
 
