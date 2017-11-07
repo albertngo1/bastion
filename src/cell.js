@@ -73,11 +73,14 @@ class Cell {
        ctx.fillStyle = "black";
        ctx.fillRect(x, y, this.len, this.len);
     }
-
-    if (this.explored) {
+    if (this.backtrack) {
+      ctx.fillStyle = "rgb(230, 147, 49)";
+      ctx.fillRect(x, y, this.len, this.len);
+    } else if (this.explored) {
       ctx.fillStyle = "rgb(221, 56, 199)";
       ctx.fillRect(x, y, this.len, this.len);
     }
+
     if (this.path) {
       ctx.fillStyle = "#64fbee";
       ctx.fillRect(x, y, this.len, this.len);

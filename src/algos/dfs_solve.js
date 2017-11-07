@@ -73,6 +73,7 @@ class SolveDFS {
       this.stack.push(this.current);
       this.current = next;
     } else if (this.stack.length > 0) {
+      this.current.backtrack = true;
       this.current = this.stack.pop();
       }
     }
