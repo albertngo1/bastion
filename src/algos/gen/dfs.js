@@ -1,12 +1,9 @@
-const Cell = require('../cell.js');
+const Generator = require('./generator.js');
 
-class GenerateDFS {
+class GenerateDFS extends Generator {
 
   constructor(maze) {
-    this.maze = maze;
-    maze.cells = [];
-
-    this.createCells(maze);
+    super(maze);
     const y = Math.floor(Math.random() * maze.cells.length)
     const x = Math.floor(Math.random() * maze.cells[0].length)
     this.current = maze.cells[y][x];
@@ -14,21 +11,6 @@ class GenerateDFS {
     this.stack = [];
     this.start = this.current;
 
-  }
-
-  createCells(maze) {
-    const rows = maze.h / maze.len;
-    const cols = maze.w / maze.len;
-    let x;
-    let y;
-    for (let i=0; i < rows; i++) {
-      maze.cells[i] = [];
-      for (let j=0; j < cols; j++) {
-        x = (j * maze.len)
-        y = (i * maze.len)
-        maze.cells[i].push(new Cell(x, y, maze.len));
-      }
-    }
   }
 
   adjacentCells(cell) {
@@ -40,8 +22,6 @@ class GenerateDFS {
           return true;
         }
       }
-
-
     let neighbors = [];
     let x;
     let y;
@@ -73,7 +53,7 @@ class GenerateDFS {
     return null;
   }
 
-  algorithm() {
+  slowAlgo() {
     const maze = this.maze;
     const next = this.adjacentCells(this.current);
     if (next) {
@@ -106,24 +86,6 @@ class GenerateDFS {
         }
       }
     }
-  }
-
-  draw(ctx) {
-    const maze = this.maze;
-    if (maze.fast === true) {
-      this.fastAlgo();
-    } else {
-      this.algorithm();
-    }
-    maze.cells.forEach( row => {
-      row.forEach( cell => {
-        cell.draw(ctx);
-      })
-    });
-    if (maze.generating) {
-      this.current.highlight(ctx);
-    }
-    ctx.strokeRect(0, 0, maze.w, maze.h);
   }
 
 

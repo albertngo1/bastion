@@ -220,10 +220,10 @@ document.addEventListener("DOMContentLoaded", function () {
 "use strict";
 
 
-var GenerateDFS = __webpack_require__(3);
-var GenerateSidewinder = __webpack_require__(4);
-var GeneratePrim = __webpack_require__(5);
-var GenerateKruskal = __webpack_require__(6);
+var GenerateDFS = __webpack_require__(15);
+var GenerateSidewinder = __webpack_require__(16);
+var GeneratePrim = __webpack_require__(17);
+var GenerateKruskal = __webpack_require__(18);
 var SolveDFS = __webpack_require__(8);
 var SolveBFS = __webpack_require__(9);
 var SolveAStar = __webpack_require__(10);
@@ -362,700 +362,11 @@ var eventHandle = function eventHandle(ctx, canvas) {
 module.exports = eventHandle;
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Cell = __webpack_require__(0);
-
-var GenerateDFS = function () {
-  function GenerateDFS(maze) {
-    _classCallCheck(this, GenerateDFS);
-
-    this.maze = maze;
-    maze.cells = [];
-
-    this.createCells(maze);
-    var y = Math.floor(Math.random() * maze.cells.length);
-    var x = Math.floor(Math.random() * maze.cells[0].length);
-    this.current = maze.cells[y][x];
-    this.current.visited = true;
-    this.stack = [];
-    this.start = this.current;
-  }
-
-  _createClass(GenerateDFS, [{
-    key: 'createCells',
-    value: function createCells(maze) {
-      var rows = maze.h / maze.len;
-      var cols = maze.w / maze.len;
-      var x = void 0;
-      var y = void 0;
-      for (var i = 0; i < rows; i++) {
-        maze.cells[i] = [];
-        for (var j = 0; j < cols; j++) {
-          x = j * maze.len;
-          y = i * maze.len;
-          maze.cells[i].push(new Cell(x, y, maze.len));
-        }
-      }
-    }
-  }, {
-    key: 'adjacentCells',
-    value: function adjacentCells(cell) {
-      var maze = this.maze;
-      var inBounds = function inBounds() {
-        if (maze.x < 0 || maze.x > maze.w || maze.y < 0 || maze.y > maze.h) {
-          return false;
-        } else {
-          return true;
-        }
-      };
-
-      var neighbors = [];
-      var x = void 0;
-      var y = void 0;
-      var add = [[-maze.len, 0], [maze.len, 0], [0, maze.len], [0, -maze.len]];
-
-      for (var i = 0; i < add.length; i++) {
-        x = cell.x + add[i][0];
-        y = cell.y + add[i][1];
-        var neighborCell = this.findCell(x, y);
-        if (inBounds() && neighborCell && !neighborCell.visited) {
-          neighbors.push(neighborCell);
-        }
-      }
-      if (neighbors.length > 0) {
-        return neighbors[Math.floor(Math.random() * neighbors.length)];
-      }
-    }
-  }, {
-    key: 'findCell',
-    value: function findCell(x, y) {
-      var maze = this.maze;
-      for (var i = 0; i < maze.cells.length; i++) {
-        for (var j = 0; j < maze.cells[0].length; j++) {
-          var cell = maze.cells[i][j];
-          if (cell.x === x && cell.y === y) {
-            return cell;
-          }
-        }
-      }
-      return null;
-    }
-  }, {
-    key: 'algorithm',
-    value: function algorithm() {
-      var maze = this.maze;
-      var next = this.adjacentCells(this.current);
-      if (next) {
-        next.visited = true;
-        this.stack.push(this.current);
-        this.current.removeWalls(next);
-        this.current = next;
-      } else if (this.stack.length > 0) {
-        this.current = this.stack.pop();
-        if (this.start === this.current) {
-          maze.generating = false;
-        }
-      }
-    }
-  }, {
-    key: 'fastAlgo',
-    value: function fastAlgo() {
-      var maze = this.maze;
-      while (true) {
-        var next = this.adjacentCells(this.current);
-        if (next) {
-          next.visited = true;
-          this.stack.push(this.current);
-          this.current.removeWalls(next);
-          this.current = next;
-        } else if (this.stack.length > 0) {
-          this.current = this.stack.pop();
-          if (this.start === this.current) {
-            maze.generating = false;
-            return;
-          }
-        }
-      }
-    }
-  }, {
-    key: 'draw',
-    value: function draw(ctx) {
-      var maze = this.maze;
-      if (maze.fast === true) {
-        this.fastAlgo();
-      } else {
-        this.algorithm();
-      }
-      maze.cells.forEach(function (row) {
-        row.forEach(function (cell) {
-          cell.draw(ctx);
-        });
-      });
-      if (maze.generating) {
-        this.current.highlight(ctx);
-      }
-      ctx.strokeRect(0, 0, maze.w, maze.h);
-    }
-  }]);
-
-  return GenerateDFS;
-}();
-
-module.exports = GenerateDFS;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Cell = __webpack_require__(0);
-
-var GenerateSidewinder = function () {
-  function GenerateSidewinder(maze) {
-    _classCallCheck(this, GenerateSidewinder);
-
-    this.maze = maze;
-    maze.cells = [];
-
-    this.createCells(maze);
-
-    this.currentIdx = { x: 0, y: 0 };
-    this.runStart = 0;
-  }
-
-  _createClass(GenerateSidewinder, [{
-    key: 'createCells',
-    value: function createCells(maze) {
-      var rows = maze.h / maze.len;
-      var cols = maze.w / maze.len;
-      var x = void 0;
-      var y = void 0;
-
-      for (var i = 0; i < rows; i++) {
-        maze.cells[i] = [];
-        for (var j = 0; j < cols; j++) {
-          x = j * maze.len;
-          y = i * maze.len;
-          maze.cells[i].push(new Cell(x, y, maze.len));
-        }
-      }
-    }
-  }, {
-    key: 'algorithm',
-    value: function algorithm() {
-      var maze = this.maze;
-      var height = maze.cells.length;
-      var width = maze.cells[0].length;
-      if (this.currentIdx.x === width) {
-        this.currentIdx.x = 0;
-        this.currentIdx.y += 1;
-        if (this.currentIdx.y === height) {
-          return this.maze.generating = false;
-        }
-      }
-      var x = this.currentIdx.x;
-      var y = this.currentIdx.y;
-      if (x === 0) {
-        this.runStart = 0;
-      }
-      if (y > 0 && (x + 1 === width || Math.random() <= .5)) {
-        var cell = this.runStart + Math.floor(Math.random() * (x - this.runStart));
-        maze.cells[y][cell].removeWalls(maze.cells[y - 1][cell]);
-        this.runStart = x + 1;
-      } else if (x + 1 < width) {
-        maze.cells[y][x].removeWalls(maze.cells[y][x + 1]);
-      }
-      maze.cells[y][x].visited = true;
-      this.currentIdx.x += 1;
-    }
-  }, {
-    key: 'fastAlgo',
-    value: function fastAlgo() {
-      var maze = this.maze;
-      var height = maze.cells.length;
-      var width = maze.cells[0].length;
-      var runStart = void 0;
-      var cell = void 0;
-
-      for (var y = 0; y < height; y++) {
-        runStart = 0;
-        for (var x = 0; x < width; x++) {
-          if (y > 0 && (x + 1 === width || Math.random() <= .5)) {
-            cell = runStart + Math.floor(Math.random() * (x - runStart + 1));
-            maze.cells[y][cell].removeWalls(maze.cells[y - 1][cell]);
-            runStart = x + 1;
-          } else if (x + 1 < width) {
-            maze.cells[y][x].removeWalls(maze.cells[y][x + 1]);
-          }
-          maze.cells[y][x].visited = true;
-        }
-      }
-      maze.generating = false;
-    }
-  }, {
-    key: 'draw',
-    value: function draw(ctx) {
-      var maze = this.maze;
-      if (maze.fast === true) {
-        this.fastAlgo();
-      } else {
-        if (this.currentIdx.y < maze.cells.length) {
-          this.algorithm();
-        }
-      }
-      maze.cells.forEach(function (row) {
-        row.forEach(function (cell) {
-          cell.draw(ctx);
-        });
-      });
-      ctx.strokeRect(0, 0, maze.w, maze.h);
-    }
-  }]);
-
-  return GenerateSidewinder;
-}();
-
-module.exports = GenerateSidewinder;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Cell = __webpack_require__(0);
-
-var GeneratePrim = function () {
-  function GeneratePrim(maze) {
-    _classCallCheck(this, GeneratePrim);
-
-    this.maze = maze;
-
-    this.frontier = [];
-
-    maze.cells = [];
-
-    this.createCells(maze);
-
-    var row = maze.cells.length;
-    var cols = maze.cells[0].length;
-    this.mark(Math.floor(Math.random() * cols), Math.floor(Math.random() * row));
-  }
-
-  _createClass(GeneratePrim, [{
-    key: "createCells",
-    value: function createCells(maze) {
-      var rows = maze.h / maze.len;
-      var cols = maze.w / maze.len;
-      var x = void 0;
-      var y = void 0;
-
-      for (var i = 0; i < rows; i++) {
-        maze.cells[i] = [];
-        for (var j = 0; j < cols; j++) {
-          x = j * maze.len;
-          y = i * maze.len;
-          maze.cells[i].push(new Cell(x, y, maze.len));
-          maze.cells[i][j].frontier = false;
-          maze.cells[i][j].visited = false;
-        }
-      }
-    }
-  }, {
-    key: "addFrontier",
-    value: function addFrontier(x, y) {
-      var maze = this.maze;
-      if (x >= 0 && y >= 0 && x < maze.cells[0].length && y < maze.cells.length && maze.cells[y][x].frontier === false && maze.cells[y][x].visited === false) {
-        maze.cells[y][x].frontier = true;
-        this.frontier.push([x, y]);
-      }
-    }
-  }, {
-    key: "mark",
-    value: function mark(x, y) {
-      var maze = this.maze;
-      maze.cells[y][x].visited = true;
-      this.addFrontier(x + 1, y);
-      this.addFrontier(x - 1, y);
-      this.addFrontier(x, y + 1);
-      this.addFrontier(x, y - 1);
-    }
-  }, {
-    key: "direction",
-    value: function direction(x, y, nx, ny) {
-      if (x < nx) {
-        return "E";
-      }
-      if (x > nx) {
-        return "W";
-      }
-      if (y < ny) {
-        return "S";
-      }
-      if (y > ny) {
-        return "N";
-      }
-    }
-  }, {
-    key: "neighbors",
-    value: function neighbors(x, y) {
-      var maze = this.maze;
-      var neighbors = [];
-
-      if (x > 0 && maze.cells[y][x - 1].visited) {
-        neighbors.push([x - 1, y]);
-      };
-      if (x + 1 < maze.cells[0].length && maze.cells[y][x + 1].visited) {
-        neighbors.push([x + 1, y]);
-      };
-      if (y > 0 && maze.cells[y - 1][x].visited) {
-        neighbors.push([x, y - 1]);
-      };
-      if (y + 1 < maze.cells.length && maze.cells[y + 1][x].visited) {
-        neighbors.push([x, y + 1]);
-      };
-
-      return neighbors;
-    }
-  }, {
-    key: "algorithm",
-    value: function algorithm() {
-      var maze = this.maze;
-      if (this.frontier.length > 0) {
-
-        var index = Math.floor(Math.random() * this.frontier.length);
-        var randFrontier = this.frontier[index];
-
-        var x = randFrontier[0];
-        var y = randFrontier[1];
-        this.frontier.splice(index, 1);
-
-        var neighbors = this.neighbors(x, y);
-
-        var randNeighbor = Math.floor(Math.random() * neighbors.length);
-        var nx = neighbors[randNeighbor][0];
-        var ny = neighbors[randNeighbor][1];
-        var dir = this.direction(x, y, nx, ny);
-
-        if (dir === "N") {
-          maze.cells[y][x].walls[0] = false;
-          maze.cells[ny][nx].walls[2] = false;
-        } else if (dir === "S") {
-          maze.cells[y][x].walls[2] = false;
-          maze.cells[ny][nx].walls[0] = false;
-        } else if (dir === "E") {
-          maze.cells[y][x].walls[1] = false;
-          maze.cells[ny][nx].walls[3] = false;
-        } else {
-          maze.cells[y][x].walls[3] = false;
-          maze.cells[ny][nx].walls[1] = false;
-        }
-        maze.cells[y][x].visited = true;
-        maze.cells[ny][nx].visited = true;
-
-        this.mark(x, y);
-      } else {
-        this.maze.generating = false;
-      }
-    }
-  }, {
-    key: "fastAlgo",
-    value: function fastAlgo() {
-      var maze = this.maze;
-      while (this.frontier.length > 0) {
-        var index = Math.floor(Math.random() * this.frontier.length);
-        var randFrontier = this.frontier[index];
-
-        var x = randFrontier[0];
-        var y = randFrontier[1];
-        this.frontier.splice(index, 1);
-
-        var neighbors = this.neighbors(x, y);
-
-        var randNeighbor = Math.floor(Math.random() * neighbors.length);
-        var nx = neighbors[randNeighbor][0];
-        var ny = neighbors[randNeighbor][1];
-        var dir = this.direction(x, y, nx, ny);
-
-        if (dir === "N") {
-          maze.cells[y][x].walls[0] = false;
-          maze.cells[ny][nx].walls[2] = false;
-        } else if (dir === "S") {
-          maze.cells[y][x].walls[2] = false;
-          maze.cells[ny][nx].walls[0] = false;
-        } else if (dir === "E") {
-          maze.cells[y][x].walls[1] = false;
-          maze.cells[ny][nx].walls[3] = false;
-        } else {
-          maze.cells[y][x].walls[3] = false;
-          maze.cells[ny][nx].walls[1] = false;
-        }
-        maze.cells[y][x].visited = true;
-        maze.cells[ny][nx].visited = true;
-
-        this.mark(x, y);
-      }
-      maze.generating = false;
-    }
-  }, {
-    key: "draw",
-    value: function draw(ctx) {
-      var maze = this.maze;
-      if (maze.fast === true) {
-        this.fastAlgo();
-      } else {
-        this.algorithm();
-      }
-      maze.cells.forEach(function (row) {
-        row.forEach(function (cell) {
-          cell.draw(ctx);
-        });
-      });
-      ctx.strokeRect(0, 0, maze.w, maze.h);
-    }
-  }]);
-
-  return GeneratePrim;
-}();
-
-module.exports = GeneratePrim;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Cell = __webpack_require__(0);
-var Tree = __webpack_require__(7);
-
-var GenerateKruskal = function () {
-  function GenerateKruskal(maze) {
-    _classCallCheck(this, GenerateKruskal);
-
-    this.N = "N";
-    this.W = "W";
-    this.DX = {
-      "E": maze.len,
-      "W": -maze.len,
-      "N": 0,
-      "S": 0
-    };
-    this.DY = {
-      "S": maze.len,
-      "N": -maze.len,
-      "W": 0,
-      "E": 0
-    };
-
-    this.maze = maze;
-    this.edges = [];
-    this.createGridAndSet();
-    this.createEdges();
-    this.algorithm();
-  }
-
-  _createClass(GenerateKruskal, [{
-    key: 'createGridAndSet',
-    value: function createGridAndSet() {
-      var maze = this.maze;
-      maze.cells = [];
-      this.sets = [];
-      for (var y = 0; y < maze.w / maze.len; y++) {
-        maze.cells[y] = [];
-        this.sets[y] = [];
-        for (var x = 0; x < maze.h / maze.len; x++) {
-          maze.cells[y].push(new Cell(x * maze.len, y * maze.len, maze.len));
-          this.sets[y].push(new Tree());
-        }
-      }
-    }
-  }, {
-    key: 'createEdges',
-    value: function createEdges() {
-      var maze = this.maze;
-      for (var y = 0; y < maze.w / maze.len; y++) {
-        for (var x = 0; x < maze.h / maze.len; x++) {
-          if (y > 0) {
-            this.edges.push([x * maze.len, y * maze.len, this.N]);
-          }
-          if (x > 0) {
-            this.edges.push([x * maze.len, y * maze.len, this.W]);
-          }
-        }
-      }
-      this.edges.sort(function (a, b) {
-        return 0.5 - Math.random();
-      });
-    }
-  }, {
-    key: 'algorithm',
-    value: function algorithm() {
-      var maze = this.maze;
-      if (this.edges.length > 0) {
-        var poppedEdge = this.edges.pop();
-        var x = poppedEdge[0];
-        var y = poppedEdge[1];
-        var dir = poppedEdge[2];
-
-        var nx = x + this.DX[dir];
-        var ny = y + this.DY[dir];
-
-        var l = this.maze.len;
-        var set1 = this.sets[y / l][x / l];
-        var set2 = this.sets[ny / l][nx / l];
-        if (!set1.connected(set2)) {
-
-          set1.connect(set2);
-
-          if (dir === "N") {
-            maze.cells[y / l][x / l].walls[0] = false;
-            maze.cells[ny / l][nx / l].walls[2] = false;
-          } else if (dir === "S") {
-            maze.cells[y / l][x / l].walls[2] = false;
-            maze.cells[ny / l][nx / l].walls[0] = false;
-          } else if (dir === "E") {
-            maze.cells[y / l][x / l].walls[1] = false;
-            maze.cells[ny / l][nx / l].walls[3] = false;
-          } else {
-            maze.cells[y / l][x / l].walls[3] = false;
-            maze.cells[ny / l][nx / l].walls[1] = false;
-          }
-        }
-        maze.cells[y / l][x / l].visited = true;
-        maze.cells[ny / l][nx / l].visited = true;
-      } else {
-        this.maze.generating = false;
-      }
-    }
-  }, {
-    key: 'fastAlgo',
-    value: function fastAlgo() {
-      var maze = this.maze;
-      while (this.edges.length > 0) {
-        var poppedEdge = this.edges.pop();
-        var x = poppedEdge[0];
-        var y = poppedEdge[1];
-        var dir = poppedEdge[2];
-
-        var nx = x + this.DX[dir];
-        var ny = y + this.DY[dir];
-
-        var l = this.maze.len;
-        var set1 = this.sets[y / l][x / l];
-        var set2 = this.sets[ny / l][nx / l];
-        if (!set1.connected(set2)) {
-
-          set1.connect(set2);
-
-          if (dir === "N") {
-            maze.cells[y / l][x / l].walls[0] = false;
-            maze.cells[ny / l][nx / l].walls[2] = false;
-          } else if (dir === "S") {
-            maze.cells[y / l][x / l].walls[2] = false;
-            maze.cells[ny / l][nx / l].walls[0] = false;
-          } else if (dir === "E") {
-            maze.cells[y / l][x / l].walls[1] = false;
-            maze.cells[ny / l][nx / l].walls[3] = false;
-          } else {
-            maze.cells[y / l][x / l].walls[3] = false;
-            maze.cells[ny / l][nx / l].walls[1] = false;
-          }
-        }
-        maze.cells[y / l][x / l].visited = true;
-        maze.cells[ny / l][nx / l].visited = true;
-      }
-      maze.generating = false;
-    }
-  }, {
-    key: 'draw',
-    value: function draw(ctx) {
-      var maze = this.maze;
-      if (maze.fast === true) {
-        this.fastAlgo();
-      } else {
-        this.algorithm();
-      }
-      maze.cells.forEach(function (row) {
-        row.forEach(function (cell) {
-          cell.draw(ctx);
-        });
-      });
-      ctx.strokeRect(0, 0, maze.w, maze.h);
-    }
-  }]);
-
-  return GenerateKruskal;
-}();
-
-module.exports = GenerateKruskal;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Tree = function () {
-  function Tree() {
-    _classCallCheck(this, Tree);
-
-    this.parent = null;
-  }
-
-  _createClass(Tree, [{
-    key: "root",
-    value: function root() {
-      return this.parent ? this.parent.root() : this;
-    }
-  }, {
-    key: "connected",
-    value: function connected(tree) {
-      return this.root() === tree.root();
-    }
-  }, {
-    key: "connect",
-    value: function connect(tree) {
-      return tree.root().parent = this;
-    }
-  }]);
-
-  return Tree;
-}();
-
-module.exports = Tree;
-
-/***/ }),
+/* 3 */,
+/* 4 */,
+/* 5 */,
+/* 6 */,
+/* 7 */,
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1734,6 +1045,621 @@ var Maze = function () {
 }();
 
 module.exports = Maze;
+
+/***/ }),
+/* 13 */,
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Cell = __webpack_require__(0);
+
+var Generator = function () {
+  function Generator(maze) {
+    _classCallCheck(this, Generator);
+
+    this.maze = maze;
+    maze.cells = [];
+    this.createCells(maze);
+  }
+
+  _createClass(Generator, [{
+    key: 'createCells',
+    value: function createCells(maze) {
+      var rows = maze.h / maze.len;
+      var cols = maze.w / maze.len;
+      var x = void 0;
+      var y = void 0;
+
+      for (var i = 0; i < rows; i++) {
+        maze.cells[i] = [];
+        for (var j = 0; j < cols; j++) {
+          x = j * maze.len;
+          y = i * maze.len;
+          maze.cells[i].push(new Cell(x, y, maze.len));
+          maze.cells[i][j].frontier = false;
+          maze.cells[i][j].visited = false;
+        }
+      }
+    }
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      var maze = this.maze;
+      if (maze.fast === true) {
+        this.fastAlgo();
+      } else {
+        this.slowAlgo();
+      }
+      maze.cells.forEach(function (row) {
+        row.forEach(function (cell) {
+          cell.draw(ctx);
+        });
+      });
+      if (this.current) {
+        if (maze.generating) {
+          this.current.highlight(ctx);
+        }
+      }
+      ctx.strokeRect(0, 0, maze.w, maze.h);
+    }
+  }]);
+
+  return Generator;
+}();
+
+module.exports = Generator;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Generator = __webpack_require__(14);
+
+var GenerateDFS = function (_Generator) {
+  _inherits(GenerateDFS, _Generator);
+
+  function GenerateDFS(maze) {
+    _classCallCheck(this, GenerateDFS);
+
+    var _this = _possibleConstructorReturn(this, (GenerateDFS.__proto__ || Object.getPrototypeOf(GenerateDFS)).call(this, maze));
+
+    var y = Math.floor(Math.random() * maze.cells.length);
+    var x = Math.floor(Math.random() * maze.cells[0].length);
+    _this.current = maze.cells[y][x];
+    _this.current.visited = true;
+    _this.stack = [];
+    _this.start = _this.current;
+
+    return _this;
+  }
+
+  _createClass(GenerateDFS, [{
+    key: 'adjacentCells',
+    value: function adjacentCells(cell) {
+      var maze = this.maze;
+      var inBounds = function inBounds() {
+        if (maze.x < 0 || maze.x > maze.w || maze.y < 0 || maze.y > maze.h) {
+          return false;
+        } else {
+          return true;
+        }
+      };
+      var neighbors = [];
+      var x = void 0;
+      var y = void 0;
+      var add = [[-maze.len, 0], [maze.len, 0], [0, maze.len], [0, -maze.len]];
+
+      for (var i = 0; i < add.length; i++) {
+        x = cell.x + add[i][0];
+        y = cell.y + add[i][1];
+        var neighborCell = this.findCell(x, y);
+        if (inBounds() && neighborCell && !neighborCell.visited) {
+          neighbors.push(neighborCell);
+        }
+      }
+      if (neighbors.length > 0) {
+        return neighbors[Math.floor(Math.random() * neighbors.length)];
+      }
+    }
+  }, {
+    key: 'findCell',
+    value: function findCell(x, y) {
+      var maze = this.maze;
+      for (var i = 0; i < maze.cells.length; i++) {
+        for (var j = 0; j < maze.cells[0].length; j++) {
+          var cell = maze.cells[i][j];
+          if (cell.x === x && cell.y === y) {
+            return cell;
+          }
+        }
+      }
+      return null;
+    }
+  }, {
+    key: 'slowAlgo',
+    value: function slowAlgo() {
+      var maze = this.maze;
+      var next = this.adjacentCells(this.current);
+      if (next) {
+        next.visited = true;
+        this.stack.push(this.current);
+        this.current.removeWalls(next);
+        this.current = next;
+      } else if (this.stack.length > 0) {
+        this.current = this.stack.pop();
+        if (this.start === this.current) {
+          maze.generating = false;
+        }
+      }
+    }
+  }, {
+    key: 'fastAlgo',
+    value: function fastAlgo() {
+      var maze = this.maze;
+      while (true) {
+        var next = this.adjacentCells(this.current);
+        if (next) {
+          next.visited = true;
+          this.stack.push(this.current);
+          this.current.removeWalls(next);
+          this.current = next;
+        } else if (this.stack.length > 0) {
+          this.current = this.stack.pop();
+          if (this.start === this.current) {
+            maze.generating = false;
+            return;
+          }
+        }
+      }
+    }
+  }]);
+
+  return GenerateDFS;
+}(Generator);
+
+module.exports = GenerateDFS;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Generator = __webpack_require__(14);
+
+var GenerateSidewinder = function (_Generator) {
+  _inherits(GenerateSidewinder, _Generator);
+
+  function GenerateSidewinder(maze) {
+    _classCallCheck(this, GenerateSidewinder);
+
+    var _this = _possibleConstructorReturn(this, (GenerateSidewinder.__proto__ || Object.getPrototypeOf(GenerateSidewinder)).call(this, maze));
+
+    _this.currentIdx = { x: 0, y: 0 };
+    _this.runStart = 0;
+    return _this;
+  }
+
+  _createClass(GenerateSidewinder, [{
+    key: 'slowAlgo',
+    value: function slowAlgo() {
+      var maze = this.maze;
+      var height = maze.cells.length;
+      var width = maze.cells[0].length;
+      if (this.currentIdx.y < maze.cells.length) {
+        if (this.currentIdx.x === width) {
+          this.currentIdx.x = 0;
+          this.currentIdx.y += 1;
+          if (this.currentIdx.y === height) {
+            return this.maze.generating = false;
+          }
+        }
+        var x = this.currentIdx.x;
+        var y = this.currentIdx.y;
+        if (x === 0) {
+          this.runStart = 0;
+        }
+        if (y > 0 && (x + 1 === width || Math.random() <= .5)) {
+          var cell = this.runStart + Math.floor(Math.random() * (x - this.runStart));
+          maze.cells[y][cell].removeWalls(maze.cells[y - 1][cell]);
+          this.runStart = x + 1;
+        } else if (x + 1 < width) {
+          maze.cells[y][x].removeWalls(maze.cells[y][x + 1]);
+        }
+        maze.cells[y][x].visited = true;
+        this.currentIdx.x += 1;
+      }
+    }
+  }, {
+    key: 'fastAlgo',
+    value: function fastAlgo() {
+      var maze = this.maze;
+      var height = maze.cells.length;
+      var width = maze.cells[0].length;
+      var runStart = void 0;
+      var cell = void 0;
+
+      for (var y = 0; y < height; y++) {
+        runStart = 0;
+        for (var x = 0; x < width; x++) {
+          if (y > 0 && (x + 1 === width || Math.random() <= .5)) {
+            cell = runStart + Math.floor(Math.random() * (x - runStart + 1));
+            maze.cells[y][cell].removeWalls(maze.cells[y - 1][cell]);
+            runStart = x + 1;
+          } else if (x + 1 < width) {
+            maze.cells[y][x].removeWalls(maze.cells[y][x + 1]);
+          }
+          maze.cells[y][x].visited = true;
+        }
+      }
+      maze.generating = false;
+    }
+  }]);
+
+  return GenerateSidewinder;
+}(Generator);
+
+module.exports = GenerateSidewinder;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Generator = __webpack_require__(14);
+
+var GeneratePrim = function (_Generator) {
+  _inherits(GeneratePrim, _Generator);
+
+  function GeneratePrim(maze) {
+    _classCallCheck(this, GeneratePrim);
+
+    var _this = _possibleConstructorReturn(this, (GeneratePrim.__proto__ || Object.getPrototypeOf(GeneratePrim)).call(this, maze));
+
+    _this.frontier = [];
+
+    var row = maze.cells.length;
+    var cols = maze.cells[0].length;
+    _this.mark(Math.floor(Math.random() * cols), Math.floor(Math.random() * row));
+    return _this;
+  }
+
+  _createClass(GeneratePrim, [{
+    key: "addFrontier",
+    value: function addFrontier(x, y) {
+      var maze = this.maze;
+      if (x >= 0 && y >= 0 && x < maze.cells[0].length && y < maze.cells.length && maze.cells[y][x].frontier === false && maze.cells[y][x].visited === false) {
+        maze.cells[y][x].frontier = true;
+        this.frontier.push([x, y]);
+      }
+    }
+  }, {
+    key: "mark",
+    value: function mark(x, y) {
+      var maze = this.maze;
+      maze.cells[y][x].visited = true;
+      this.addFrontier(x + 1, y);
+      this.addFrontier(x - 1, y);
+      this.addFrontier(x, y + 1);
+      this.addFrontier(x, y - 1);
+    }
+  }, {
+    key: "direction",
+    value: function direction(x, y, nx, ny) {
+      if (x < nx) {
+        return "E";
+      }
+      if (x > nx) {
+        return "W";
+      }
+      if (y < ny) {
+        return "S";
+      }
+      if (y > ny) {
+        return "N";
+      }
+    }
+  }, {
+    key: "neighbors",
+    value: function neighbors(x, y) {
+      var maze = this.maze;
+      var neighbors = [];
+
+      if (x > 0 && maze.cells[y][x - 1].visited) {
+        neighbors.push([x - 1, y]);
+      };
+      if (x + 1 < maze.cells[0].length && maze.cells[y][x + 1].visited) {
+        neighbors.push([x + 1, y]);
+      };
+      if (y > 0 && maze.cells[y - 1][x].visited) {
+        neighbors.push([x, y - 1]);
+      };
+      if (y + 1 < maze.cells.length && maze.cells[y + 1][x].visited) {
+        neighbors.push([x, y + 1]);
+      };
+
+      return neighbors;
+    }
+  }, {
+    key: "algorithm",
+    value: function algorithm() {
+      var maze = this.maze;
+      var index = Math.floor(Math.random() * this.frontier.length);
+      var randFrontier = this.frontier[index];
+
+      var x = randFrontier[0];
+      var y = randFrontier[1];
+      this.frontier.splice(index, 1);
+
+      var neighbors = this.neighbors(x, y);
+
+      var randNeighbor = Math.floor(Math.random() * neighbors.length);
+      var nx = neighbors[randNeighbor][0];
+      var ny = neighbors[randNeighbor][1];
+      var dir = this.direction(x, y, nx, ny);
+
+      if (dir === "N") {
+        maze.cells[y][x].walls[0] = false;
+        maze.cells[ny][nx].walls[2] = false;
+      } else if (dir === "S") {
+        maze.cells[y][x].walls[2] = false;
+        maze.cells[ny][nx].walls[0] = false;
+      } else if (dir === "E") {
+        maze.cells[y][x].walls[1] = false;
+        maze.cells[ny][nx].walls[3] = false;
+      } else {
+        maze.cells[y][x].walls[3] = false;
+        maze.cells[ny][nx].walls[1] = false;
+      }
+      maze.cells[y][x].visited = true;
+      maze.cells[ny][nx].visited = true;
+
+      this.mark(x, y);
+    }
+  }, {
+    key: "slowAlgo",
+    value: function slowAlgo() {
+      var maze = this.maze;
+      if (this.frontier.length > 0) {
+        this.algorithm();
+      } else {
+        this.maze.generating = false;
+      }
+    }
+  }, {
+    key: "fastAlgo",
+    value: function fastAlgo() {
+      var maze = this.maze;
+      while (this.frontier.length > 0) {
+        this.algorithm();
+      }
+      maze.generating = false;
+    }
+  }]);
+
+  return GeneratePrim;
+}(Generator);
+
+module.exports = GeneratePrim;
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Tree = __webpack_require__(19);
+var Cell = __webpack_require__(0);
+var Generator = __webpack_require__(14);
+
+var GenerateKruskal = function (_Generator) {
+  _inherits(GenerateKruskal, _Generator);
+
+  function GenerateKruskal(maze) {
+    _classCallCheck(this, GenerateKruskal);
+
+    var _this = _possibleConstructorReturn(this, (GenerateKruskal.__proto__ || Object.getPrototypeOf(GenerateKruskal)).call(this, maze));
+
+    _this.N = "N";
+    _this.W = "W";
+    _this.DX = {
+      "E": maze.len,
+      "W": -maze.len,
+      "N": 0,
+      "S": 0
+    };
+    _this.DY = {
+      "S": maze.len,
+      "N": -maze.len,
+      "W": 0,
+      "E": 0
+    };
+
+    _this.maze = maze;
+    _this.edges = [];
+    _this.createGridAndSet();
+    _this.createEdges();
+    return _this;
+  }
+
+  _createClass(GenerateKruskal, [{
+    key: 'createGridAndSet',
+    value: function createGridAndSet() {
+      var maze = this.maze;
+      maze.cells = [];
+      this.sets = [];
+      for (var y = 0; y < maze.w / maze.len; y++) {
+        maze.cells[y] = [];
+        this.sets[y] = [];
+        for (var x = 0; x < maze.h / maze.len; x++) {
+          maze.cells[y].push(new Cell(x * maze.len, y * maze.len, maze.len));
+          this.sets[y].push(new Tree());
+        }
+      }
+    }
+  }, {
+    key: 'createEdges',
+    value: function createEdges() {
+      var maze = this.maze;
+      for (var y = 0; y < maze.w / maze.len; y++) {
+        for (var x = 0; x < maze.h / maze.len; x++) {
+          if (y > 0) {
+            this.edges.push([x * maze.len, y * maze.len, this.N]);
+          }
+          if (x > 0) {
+            this.edges.push([x * maze.len, y * maze.len, this.W]);
+          }
+        }
+      }
+      this.edges.sort(function (a, b) {
+        return 0.5 - Math.random();
+      });
+    }
+  }, {
+    key: 'slowAlgo',
+    value: function slowAlgo() {
+      if (this.edges.length > 0) {
+        this.algorithm();
+      } else {
+        this.maze.generating = false;
+      }
+    }
+  }, {
+    key: 'fastAlgo',
+    value: function fastAlgo() {
+      while (this.edges.length > 0) {
+        this.algorithm();
+      }
+      this.maze.generating = false;
+    }
+  }, {
+    key: 'algorithm',
+    value: function algorithm() {
+      var maze = this.maze;
+      var poppedEdge = this.edges.pop();
+      var x = poppedEdge[0];
+      var y = poppedEdge[1];
+      var dir = poppedEdge[2];
+
+      var nx = x + this.DX[dir];
+      var ny = y + this.DY[dir];
+
+      var l = this.maze.len;
+      var set1 = this.sets[y / l][x / l];
+      var set2 = this.sets[ny / l][nx / l];
+      if (!set1.connected(set2)) {
+
+        set1.connect(set2);
+
+        if (dir === "N") {
+          maze.cells[y / l][x / l].walls[0] = false;
+          maze.cells[ny / l][nx / l].walls[2] = false;
+        } else if (dir === "S") {
+          maze.cells[y / l][x / l].walls[2] = false;
+          maze.cells[ny / l][nx / l].walls[0] = false;
+        } else if (dir === "E") {
+          maze.cells[y / l][x / l].walls[1] = false;
+          maze.cells[ny / l][nx / l].walls[3] = false;
+        } else {
+          maze.cells[y / l][x / l].walls[3] = false;
+          maze.cells[ny / l][nx / l].walls[1] = false;
+        }
+      }
+      maze.cells[y / l][x / l].visited = true;
+      maze.cells[ny / l][nx / l].visited = true;
+    }
+  }]);
+
+  return GenerateKruskal;
+}(Generator);
+
+module.exports = GenerateKruskal;
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Tree = function () {
+  function Tree() {
+    _classCallCheck(this, Tree);
+
+    this.parent = null;
+  }
+
+  _createClass(Tree, [{
+    key: "root",
+    value: function root() {
+      return this.parent ? this.parent.root() : this;
+    }
+  }, {
+    key: "connected",
+    value: function connected(tree) {
+      return this.root() === tree.root();
+    }
+  }, {
+    key: "connect",
+    value: function connect(tree) {
+      return tree.root().parent = this;
+    }
+  }]);
+
+  return Tree;
+}();
+
+module.exports = Tree;
 
 /***/ })
 /******/ ]);
