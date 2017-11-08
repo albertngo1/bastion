@@ -1,13 +1,12 @@
-class SolveDFS {
+
+
+class Solver {
 
   constructor(maze) {
     this.maze = maze;
-
     this.start = maze.cells[0][0];
-    this.start.parent = null;
-    this.current = maze.cells[0][0];
     this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
-    this.stack = [];
+
   }
 
   adjacentCells(cell) {
@@ -24,7 +23,6 @@ class SolveDFS {
     let x;
     let y;
     const add = [];
-
     if (!cell.walls[0]) {
       add.push([0, -maze.len])
     }
@@ -47,7 +45,7 @@ class SolveDFS {
       }
     }
     if (neighbors.length > 0) {
-      return neighbors[Math.floor(Math.random() * neighbors.length)];
+      return neighbors;
     }
   }
 
@@ -64,33 +62,27 @@ class SolveDFS {
     return null;
   }
 
-  algorithm() {
-    const maze = this.maze;
-    if (this.current !== this.finish) {
-    const next = this.adjacentCells(this.current);
-    if (next) {
-      next.explored = true;
-      this.stack.push(this.current);
-      this.current = next;
-    } else if (this.stack.length > 0) {
-      this.current.backtrack = true;
-      this.current = this.stack.pop();
-      }
-    }
-  }
+
 
   path() {
-    if (this.stack.length > 0) {
-      this.stack.pop().path = true;
-    } else {
+    if (this.pathfinder === this.start) {
       this.maze.solving = false;
       this.maze.solved = true;
+    } else if (!this.pathfinder) {
+      this.pathfinder = this.finish.parent;
+    } else {
+      this.pathfinder.path = true;
+      this.pathfinder = this.pathfinder.parent;
     }
   }
 
   draw(ctx) {
     const maze = this.maze;
-    this.algorithm();
+    if (this.current === this.finish) {
+      this.path();
+    } else {
+      this.algorithm();
+    }
     maze.cells.forEach( row => {
       row.forEach( cell => {
         cell.draw(ctx);
@@ -99,13 +91,20 @@ class SolveDFS {
     this.current.highlight(ctx);
     this.start.highlightStart(ctx);
     this.finish.highlightEnd(ctx);
-    if (this.current === this.finish) {
-      this.path();
-    }
     ctx.strokeRect(0, 0, maze.w, maze.h);
   }
 
+  neighborExist(neighbor, list) {
+    for (let i=0; i < list.length; i++) {
+      let cell = list[i];
+      if (cell.x === neighbor.x && cell.y === neighbor.y) {
+        return cell;
+      }
+    }
+    return false;
+  }
 
 }
 
-module.exports = SolveDFS;
+
+module.exports = Solver;

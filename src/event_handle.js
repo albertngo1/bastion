@@ -2,10 +2,10 @@ const GenerateDFS = require('./algos/gen/dfs.js');
 const GenerateSidewinder = require('./algos/gen/sidewinder.js');
 const GeneratePrim = require('./algos/gen/prim.js');
 const GenerateKruskal = require('./algos/gen/kruskal/kruskal.js');
-const SolveDFS = require('./algos/dfs_solve.js');
-const SolveBFS = require('./algos/bfs_solve.js');
-const SolveAStar = require('./algos/a_star_solve.js');
-const SolveDijkstra = require('./algos/dijkstra_solve.js');
+const SolveDFS = require('./algos/sol/dfs_solve.js');
+const SolveBFS = require('./algos/sol/bfs_solve.js');
+const SolveAStar = require('./algos/sol/a_star_solve.js');
+const SolveDijkstra = require('./algos/sol/dijkstra_solve.js');
 const Maze = require('./maze.js');
 
 

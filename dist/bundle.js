@@ -224,10 +224,10 @@ var GenerateDFS = __webpack_require__(15);
 var GenerateSidewinder = __webpack_require__(16);
 var GeneratePrim = __webpack_require__(17);
 var GenerateKruskal = __webpack_require__(18);
-var SolveDFS = __webpack_require__(8);
-var SolveBFS = __webpack_require__(9);
-var SolveAStar = __webpack_require__(10);
-var SolveDijkstra = __webpack_require__(11);
+var SolveDFS = __webpack_require__(20);
+var SolveBFS = __webpack_require__(21);
+var SolveAStar = __webpack_require__(22);
+var SolveDijkstra = __webpack_require__(23);
 var Maze = __webpack_require__(12);
 
 var eventHandle = function eventHandle(ctx, canvas) {
@@ -367,605 +367,10 @@ module.exports = eventHandle;
 /* 5 */,
 /* 6 */,
 /* 7 */,
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var SolveDFS = function () {
-  function SolveDFS(maze) {
-    _classCallCheck(this, SolveDFS);
-
-    this.maze = maze;
-
-    this.start = maze.cells[0][0];
-    this.start.parent = null;
-    this.current = maze.cells[0][0];
-    this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
-    this.stack = [];
-  }
-
-  _createClass(SolveDFS, [{
-    key: "adjacentCells",
-    value: function adjacentCells(cell) {
-      var maze = this.maze;
-      var inBounds = function inBounds() {
-        if (maze.x < 0 || maze.x > maze.w || maze.y < 0 || maze.y > maze.h) {
-          return false;
-        } else {
-          return true;
-        }
-      };
-
-      var neighbors = [];
-      var x = void 0;
-      var y = void 0;
-      var add = [];
-
-      if (!cell.walls[0]) {
-        add.push([0, -maze.len]);
-      }
-      if (!cell.walls[1]) {
-        add.push([maze.len, 0]);
-      }
-      if (!cell.walls[2]) {
-        add.push([0, maze.len]);
-      }
-      if (!cell.walls[3]) {
-        add.push([-maze.len, 0]);
-      }
-
-      for (var i = 0; i < add.length; i++) {
-        x = cell.x + add[i][0];
-        y = cell.y + add[i][1];
-        var neighborCell = this.findCell(x, y);
-        if (inBounds() && neighborCell && !neighborCell.explored) {
-          neighbors.push(neighborCell);
-        }
-      }
-      if (neighbors.length > 0) {
-        return neighbors[Math.floor(Math.random() * neighbors.length)];
-      }
-    }
-  }, {
-    key: "findCell",
-    value: function findCell(x, y) {
-      var maze = this.maze;
-      for (var i = 0; i < maze.cells.length; i++) {
-        for (var j = 0; j < maze.cells[0].length; j++) {
-          var cell = maze.cells[i][j];
-          if (cell.x === x && cell.y === y) {
-            return cell;
-          }
-        }
-      }
-      return null;
-    }
-  }, {
-    key: "algorithm",
-    value: function algorithm() {
-      var maze = this.maze;
-      if (this.current !== this.finish) {
-        var next = this.adjacentCells(this.current);
-        if (next) {
-          next.explored = true;
-          this.stack.push(this.current);
-          this.current = next;
-        } else if (this.stack.length > 0) {
-          this.current.backtrack = true;
-          this.current = this.stack.pop();
-        }
-      }
-    }
-  }, {
-    key: "path",
-    value: function path() {
-      if (this.stack.length > 0) {
-        this.stack.pop().path = true;
-      } else {
-        this.maze.solving = false;
-        this.maze.solved = true;
-      }
-    }
-  }, {
-    key: "draw",
-    value: function draw(ctx) {
-      var maze = this.maze;
-      this.algorithm();
-      maze.cells.forEach(function (row) {
-        row.forEach(function (cell) {
-          cell.draw(ctx);
-        });
-      });
-      this.current.highlight(ctx);
-      this.start.highlightStart(ctx);
-      this.finish.highlightEnd(ctx);
-      if (this.current === this.finish) {
-        this.path();
-      }
-      ctx.strokeRect(0, 0, maze.w, maze.h);
-    }
-  }]);
-
-  return SolveDFS;
-}();
-
-module.exports = SolveDFS;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var SolveBFS = function () {
-  function SolveBFS(maze) {
-    _classCallCheck(this, SolveBFS);
-
-    this.maze = maze;
-
-    this.start = maze.cells[0][0];
-    this.current = this.start;
-    this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
-    this.queue = [];
-  }
-
-  _createClass(SolveBFS, [{
-    key: "adjacentCells",
-    value: function adjacentCells(cell) {
-      var maze = this.maze;
-      var inBounds = function inBounds() {
-        if (maze.x < 0 || maze.x > maze.w || maze.y < 0 || maze.y > maze.h) {
-          return false;
-        } else {
-          return true;
-        }
-      };
-
-      var neighbors = [];
-      var x = void 0;
-      var y = void 0;
-      var add = [];
-      if (!cell.walls[0]) {
-        add.push([0, -maze.len]);
-      }
-      if (!cell.walls[1]) {
-        add.push([maze.len, 0]);
-      }
-      if (!cell.walls[2]) {
-        add.push([0, maze.len]);
-      }
-      if (!cell.walls[3]) {
-        add.push([-maze.len, 0]);
-      }
-
-      for (var i = 0; i < add.length; i++) {
-        x = cell.x + add[i][0];
-        y = cell.y + add[i][1];
-        var neighborCell = this.findCell(x, y);
-        if (inBounds() && neighborCell && !neighborCell.explored) {
-          neighbors.push(neighborCell);
-        }
-      }
-      if (neighbors.length > 0) {
-        return neighbors;
-      }
-    }
-  }, {
-    key: "findCell",
-    value: function findCell(x, y) {
-      var maze = this.maze;
-      for (var i = 0; i < maze.cells.length; i++) {
-        for (var j = 0; j < maze.cells[0].length; j++) {
-          var cell = maze.cells[i][j];
-          if (cell.x === x && cell.y === y) {
-            return cell;
-          }
-        }
-      }
-      return null;
-    }
-  }, {
-    key: "algorithm",
-    value: function algorithm() {
-      var _this = this;
-
-      var maze = this.maze;
-      if (this.current !== this.finish) {
-        var neighbors = this.adjacentCells(this.current);
-        if (neighbors) {
-          neighbors.forEach(function (neighbor) {
-            neighbor.parent = _this.current;
-            _this.queue.push(neighbor);
-          });
-        }
-        var next = this.queue.shift();
-        next.explored = true;
-        this.current = next;
-      }
-    }
-  }, {
-    key: "path",
-    value: function path() {
-      if (this.pathfinder === this.start) {
-        this.maze.solving = false;
-        this.maze.solved = true;
-      } else if (!this.pathfinder) {
-        this.pathfinder = this.finish.parent;
-      } else {
-        this.pathfinder.path = true;
-        this.pathfinder = this.pathfinder.parent;
-      }
-    }
-  }, {
-    key: "draw",
-    value: function draw(ctx) {
-      var maze = this.maze;
-      maze.cells.forEach(function (row) {
-        row.forEach(function (cell) {
-          cell.draw(ctx);
-        });
-      });
-      this.current.highlight(ctx);
-      this.start.highlightStart(ctx);
-      this.finish.highlightEnd(ctx);
-      if (this.current === this.finish) {
-        this.path();
-      } else {
-        this.algorithm();
-      }
-      ctx.strokeRect(0, 0, maze.w, maze.h);
-    }
-  }]);
-
-  return SolveBFS;
-}();
-
-module.exports = SolveBFS;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var SolveAStar = function () {
-  function SolveAStar(maze) {
-    _classCallCheck(this, SolveAStar);
-
-    this.maze = maze;
-
-    this.start = maze.cells[0][0];
-    this.start.f = 0;
-    this.start.g = 0;
-    this.start.h = 0;
-    this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
-
-    this.open = [this.start];
-    this.closed = [];
-  }
-
-  _createClass(SolveAStar, [{
-    key: "adjacentCells",
-    value: function adjacentCells(cell) {
-      var maze = this.maze;
-      var inBounds = function inBounds() {
-        if (maze.x < 0 || maze.x > maze.w || maze.y < 0 || maze.y > maze.h) {
-          return false;
-        } else {
-          return true;
-        }
-      };
-
-      var neighbors = [];
-      var x = void 0;
-      var y = void 0;
-      var add = [];
-
-      if (!cell.walls[0]) {
-        add.push([0, -maze.len]);
-      }
-      if (!cell.walls[1]) {
-        add.push([maze.len, 0]);
-      }
-      if (!cell.walls[2]) {
-        add.push([0, maze.len]);
-      }
-      if (!cell.walls[3]) {
-        add.push([-maze.len, 0]);
-      }
-
-      for (var i = 0; i < add.length; i++) {
-        x = cell.x + add[i][0];
-        y = cell.y + add[i][1];
-        var neighborCell = this.findCell(x, y);
-        if (inBounds() && neighborCell && !neighborCell.explored) {
-          neighborCell.parent = cell;
-          neighbors.push(neighborCell);
-        }
-      }
-      if (neighbors.length > 0) {
-        return neighbors;
-      }
-    }
-  }, {
-    key: "findCell",
-    value: function findCell(x, y) {
-      var maze = this.maze;
-      for (var i = 0; i < maze.cells.length; i++) {
-        for (var j = 0; j < maze.cells[0].length; j++) {
-          var cell = maze.cells[i][j];
-          if (cell.x === x && cell.y === y) {
-            return cell;
-          }
-        }
-      }
-      return null;
-    }
-  }, {
-    key: "algorithm",
-    value: function algorithm() {
-      var maze = this.maze;
-      if (this.current !== this.finish) {
-        if (this.open.length > 0) {
-          this.open.sort(function (a, b) {
-            return b.f - a.f;
-          });
-          this.current = this.open.pop();
-          this.current.explored = true;
-          var neighbors = this.adjacentCells(this.current);
-          if (neighbors) {
-            for (var i = 0; i < neighbors.length; i++) {
-              if (neighbors[i] === this.finish) {
-                this.current = neighbors[i];
-                return;
-              }
-              neighbors[i].g = this.current.g + Math.sqrt(Math.pow(neighbors[i].x - this.current.x, 2) + (neighbors[i].y - this.current.y, 2));
-              neighbors[i].h = Math.abs(neighbors[i].x - this.finish.x) + Math.abs(neighbors[i].y - this.finish.y);
-              neighbors[i].f = neighbors[i].g + neighbors[i].h;
-              var openListCell = this.neighborExist(neighbors[i], this.open);
-              var closedListCell = this.neighborExist(neighbors[i], this.closed);
-              if (openListCell) {
-                if (neighbors[i].f > openListCell.f) {}
-              } else if (closedListCell) {
-                if (neighbors[i].f > openListCell.f) {}
-              } else {
-                this.open.push(neighbors[i]);
-              }
-              this.closed.push(this.current);
-            }
-          }
-        }
-      } else {
-        this.maze.solving = false;
-        this.maze.solved = true;
-      }
-    }
-  }, {
-    key: "neighborExist",
-    value: function neighborExist(neighbor, list) {
-      for (var i = 0; i < list.length; i++) {
-        var cell = list[i];
-        if (cell.x === neighbor.x && cell.y === neighbor.y) {
-          return cell;
-        }
-      }
-      return false;
-    }
-  }, {
-    key: "path",
-    value: function path() {
-      if (this.pathfinder === this.start) {
-        this.maze.solving = false;
-        this.maze.solved = true;
-      } else if (!this.pathfinder) {
-        this.pathfinder = this.finish.parent;
-      } else {
-        this.pathfinder.path = true;
-        this.pathfinder = this.pathfinder.parent;
-      }
-    }
-  }, {
-    key: "draw",
-    value: function draw(ctx) {
-      var maze = this.maze;
-      if (this.current === this.finish) {
-        this.path();
-      } else {
-        this.algorithm();
-      }
-      maze.cells.forEach(function (row) {
-        row.forEach(function (cell) {
-          cell.draw(ctx);
-        });
-      });
-      this.current.highlight(ctx);
-      this.start.highlightStart(ctx);
-      this.finish.highlightEnd(ctx);
-      ctx.strokeRect(0, 0, maze.w, maze.h);
-    }
-  }]);
-
-  return SolveAStar;
-}();
-
-module.exports = SolveAStar;
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var SolveDijkstra = function () {
-  function SolveDijkstra(maze) {
-    var _this = this;
-
-    _classCallCheck(this, SolveDijkstra);
-
-    this.maze = maze;
-
-    this.start = maze.cells[0][0];
-    this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
-    this.set = [];
-    maze.cells.forEach(function (row) {
-      row.forEach(function (cell) {
-        cell.distance = 1 / 0;
-        cell.parent = null;
-        _this.set.push(cell);
-      });
-    });
-
-    this.start.distance = 0;
-  }
-
-  _createClass(SolveDijkstra, [{
-    key: "adjacentCells",
-    value: function adjacentCells(cell) {
-      var maze = this.maze;
-      var inBounds = function inBounds() {
-        if (maze.x < 0 || maze.x > maze.w || maze.y < 0 || maze.y > maze.h) {
-          return false;
-        } else {
-          return true;
-        }
-      };
-
-      var neighbors = [];
-      var x = void 0;
-      var y = void 0;
-      var add = [];
-      if (!cell.walls[0]) {
-        add.push([0, -maze.len]);
-      }
-      if (!cell.walls[1]) {
-        add.push([maze.len, 0]);
-      }
-      if (!cell.walls[2]) {
-        add.push([0, maze.len]);
-      }
-      if (!cell.walls[3]) {
-        add.push([-maze.len, 0]);
-      }
-
-      for (var i = 0; i < add.length; i++) {
-        x = cell.x + add[i][0];
-        y = cell.y + add[i][1];
-        var neighborCell = this.findCell(x, y);
-        if (inBounds() && neighborCell && !neighborCell.explored) {
-          neighborCell.parent = cell;
-          neighbors.push(neighborCell);
-        }
-      }
-      return neighbors;
-    }
-  }, {
-    key: "findCell",
-    value: function findCell(x, y) {
-      var maze = this.maze;
-      for (var i = 0; i < maze.cells.length; i++) {
-        for (var j = 0; j < maze.cells[0].length; j++) {
-          var cell = maze.cells[i][j];
-          if (cell.x === x && cell.y === y) {
-            return cell;
-          }
-        }
-      }
-      return null;
-    }
-  }, {
-    key: "algorithm",
-    value: function algorithm() {
-      var maze = this.maze;
-      if (this.set.length > 0) {
-        this.set.sort(function (a, b) {
-          return b.distance - a.distance;
-        });
-        this.current = this.set.pop();
-        this.current.explored = true;
-        var neighbors = this.adjacentCells(this.current);
-        for (var i = 0; i < neighbors.length; i++) {
-          var dist = this.current.distance + Math.sqrt(Math.pow(neighbors[i].x - this.current.x, 2) + Math.pow(neighbors[i].y - this.current.y, 2));
-          if (dist < neighbors[i].distance) {
-            neighbors[i].distance = dist;
-          }
-        }
-      } else {
-        this.maze.solving = false;
-        this.maze.solved = true;
-      }
-    }
-  }, {
-    key: "neighborExist",
-    value: function neighborExist(neighbor, list) {
-      for (var i = 0; i < list.length; i++) {
-        var cell = list[i];
-        if (cell.x === neighbor.x && cell.y === neighbor.y) {
-          return cell;
-        }
-      }
-      return false;
-    }
-  }, {
-    key: "path",
-    value: function path() {
-      if (this.pathfinder === this.start) {
-        this.maze.solving = false;
-        this.maze.solved = true;
-      } else if (!this.pathfinder) {
-        this.pathfinder = this.finish.parent;
-      } else {
-        this.pathfinder.path = true;
-        this.pathfinder = this.pathfinder.parent;
-      }
-    }
-  }, {
-    key: "draw",
-    value: function draw(ctx) {
-      var maze = this.maze;
-      if (this.current === this.finish) {
-        this.path();
-      } else {
-        this.algorithm();
-      }
-      maze.cells.forEach(function (row) {
-        row.forEach(function (cell) {
-          cell.draw(ctx);
-        });
-      });
-      this.current.highlight(ctx);
-      this.start.highlightStart(ctx);
-      this.finish.highlightEnd(ctx);
-      ctx.strokeRect(0, 0, maze.w, maze.h);
-    }
-  }]);
-
-  return SolveDijkstra;
-}();
-
-module.exports = SolveDijkstra;
-
-/***/ }),
+/* 8 */,
+/* 9 */,
+/* 10 */,
+/* 11 */,
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1660,6 +1065,410 @@ var Tree = function () {
 }();
 
 module.exports = Tree;
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Solver = __webpack_require__(24);
+
+var SolveDFS = function (_Solver) {
+  _inherits(SolveDFS, _Solver);
+
+  function SolveDFS(maze) {
+    _classCallCheck(this, SolveDFS);
+
+    var _this = _possibleConstructorReturn(this, (SolveDFS.__proto__ || Object.getPrototypeOf(SolveDFS)).call(this, maze));
+
+    _this.start.parent = null;
+    _this.current = _this.start;
+    _this.stack = [];
+    return _this;
+  }
+
+  _createClass(SolveDFS, [{
+    key: 'algorithm',
+    value: function algorithm() {
+      var maze = this.maze;
+      if (this.current !== this.finish) {
+        var neighbors = this.adjacentCells(this.current);
+        if (neighbors) {
+          var next = neighbors[Math.floor(Math.random() * neighbors.length)];
+          next.explored = true;
+          this.stack.push(this.current);
+          this.current = next;
+        } else if (this.stack.length > 0) {
+          this.current.backtrack = true;
+          this.current = this.stack.pop();
+        }
+      }
+    }
+  }, {
+    key: 'path',
+    value: function path() {
+      if (this.stack.length > 0) {
+        this.stack.pop().path = true;
+      } else {
+        this.maze.solving = false;
+        this.maze.solved = true;
+      }
+    }
+  }]);
+
+  return SolveDFS;
+}(Solver);
+
+module.exports = SolveDFS;
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Solver = __webpack_require__(24);
+
+var SolveBFS = function (_Solver) {
+  _inherits(SolveBFS, _Solver);
+
+  function SolveBFS(maze) {
+    _classCallCheck(this, SolveBFS);
+
+    var _this = _possibleConstructorReturn(this, (SolveBFS.__proto__ || Object.getPrototypeOf(SolveBFS)).call(this, maze));
+
+    _this.current = _this.start;
+    _this.queue = [];
+    return _this;
+  }
+
+  _createClass(SolveBFS, [{
+    key: 'algorithm',
+    value: function algorithm() {
+      var _this2 = this;
+
+      var maze = this.maze;
+      if (this.current !== this.finish) {
+        var neighbors = this.adjacentCells(this.current);
+        if (neighbors) {
+          neighbors.forEach(function (neighbor) {
+            neighbor.parent = _this2.current;
+            _this2.queue.push(neighbor);
+          });
+        }
+        var next = this.queue.shift();
+        next.explored = true;
+        this.current = next;
+      }
+    }
+  }]);
+
+  return SolveBFS;
+}(Solver);
+
+module.exports = SolveBFS;
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Solver = __webpack_require__(24);
+
+var SolveAStar = function (_Solver) {
+  _inherits(SolveAStar, _Solver);
+
+  function SolveAStar(maze) {
+    _classCallCheck(this, SolveAStar);
+
+    var _this = _possibleConstructorReturn(this, (SolveAStar.__proto__ || Object.getPrototypeOf(SolveAStar)).call(this, maze));
+
+    _this.start.f = 0;
+    _this.start.g = 0;
+    _this.start.h = 0;
+    _this.open = [_this.start];
+    _this.closed = [];
+    return _this;
+  }
+
+  _createClass(SolveAStar, [{
+    key: 'algorithm',
+    value: function algorithm() {
+      var _this2 = this;
+
+      var maze = this.maze;
+      if (this.current !== this.finish) {
+        if (this.open.length > 0) {
+          this.open.sort(function (a, b) {
+            return b.f - a.f;
+          });
+          this.current = this.open.pop();
+          this.current.explored = true;
+          var neighbors = this.adjacentCells(this.current);
+          if (neighbors) {
+            neighbors.forEach(function (neighbor) {
+              neighbor.parent = _this2.current;
+            });
+            for (var i = 0; i < neighbors.length; i++) {
+              if (neighbors[i] === this.finish) {
+                this.current = neighbors[i];
+                return;
+              }
+              neighbors[i].g = this.current.g + Math.sqrt(Math.pow(neighbors[i].x - this.current.x, 2) + (neighbors[i].y - this.current.y, 2));
+              neighbors[i].h = Math.abs(neighbors[i].x - this.finish.x) + Math.abs(neighbors[i].y - this.finish.y);
+              neighbors[i].f = neighbors[i].g + neighbors[i].h;
+              var openListCell = this.neighborExist(neighbors[i], this.open);
+              var closedListCell = this.neighborExist(neighbors[i], this.closed);
+              if (openListCell) {
+                if (neighbors[i].f > openListCell.f) {}
+              } else if (closedListCell) {
+                if (neighbors[i].f > openListCell.f) {}
+              } else {
+                this.open.push(neighbors[i]);
+              }
+              this.closed.push(this.current);
+            }
+          }
+        }
+      } else {
+        this.maze.solving = false;
+        this.maze.solved = true;
+      }
+    }
+  }]);
+
+  return SolveAStar;
+}(Solver);
+
+module.exports = SolveAStar;
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Solver = __webpack_require__(24);
+
+var SolveDijkstra = function (_Solver) {
+  _inherits(SolveDijkstra, _Solver);
+
+  function SolveDijkstra(maze) {
+    _classCallCheck(this, SolveDijkstra);
+
+    var _this = _possibleConstructorReturn(this, (SolveDijkstra.__proto__ || Object.getPrototypeOf(SolveDijkstra)).call(this, maze));
+
+    _this.set = [];
+    maze.cells.forEach(function (row) {
+      row.forEach(function (cell) {
+        cell.distance = 1 / 0;
+        cell.parent = null;
+        _this.set.push(cell);
+      });
+    });
+
+    _this.start.distance = 0;
+    return _this;
+  }
+
+  _createClass(SolveDijkstra, [{
+    key: 'algorithm',
+    value: function algorithm() {
+      var _this2 = this;
+
+      var maze = this.maze;
+      if (this.set.length > 0) {
+        this.set.sort(function (a, b) {
+          return b.distance - a.distance;
+        });
+        this.current = this.set.pop();
+        this.current.explored = true;
+        var neighbors = this.adjacentCells(this.current);
+        if (neighbors) {
+          neighbors.forEach(function (neighbor) {
+            neighbor.parent = _this2.current;
+          });
+        }
+        for (var i = 0; i < neighbors.length; i++) {
+          var dist = this.current.distance + Math.sqrt(Math.pow(neighbors[i].x - this.current.x, 2) + Math.pow(neighbors[i].y - this.current.y, 2));
+          if (dist < neighbors[i].distance) {
+            neighbors[i].distance = dist;
+          }
+        }
+      } else {
+        this.maze.solving = false;
+        this.maze.solved = true;
+      }
+    }
+  }]);
+
+  return SolveDijkstra;
+}(Solver);
+
+module.exports = SolveDijkstra;
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Solver = function () {
+  function Solver(maze) {
+    _classCallCheck(this, Solver);
+
+    this.maze = maze;
+    this.start = maze.cells[0][0];
+    this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
+  }
+
+  _createClass(Solver, [{
+    key: "adjacentCells",
+    value: function adjacentCells(cell) {
+      var maze = this.maze;
+      var inBounds = function inBounds() {
+        if (maze.x < 0 || maze.x > maze.w || maze.y < 0 || maze.y > maze.h) {
+          return false;
+        } else {
+          return true;
+        }
+      };
+
+      var neighbors = [];
+      var x = void 0;
+      var y = void 0;
+      var add = [];
+      if (!cell.walls[0]) {
+        add.push([0, -maze.len]);
+      }
+      if (!cell.walls[1]) {
+        add.push([maze.len, 0]);
+      }
+      if (!cell.walls[2]) {
+        add.push([0, maze.len]);
+      }
+      if (!cell.walls[3]) {
+        add.push([-maze.len, 0]);
+      }
+
+      for (var i = 0; i < add.length; i++) {
+        x = cell.x + add[i][0];
+        y = cell.y + add[i][1];
+        var neighborCell = this.findCell(x, y);
+        if (inBounds() && neighborCell && !neighborCell.explored) {
+          neighbors.push(neighborCell);
+        }
+      }
+      if (neighbors.length > 0) {
+        return neighbors;
+      }
+    }
+  }, {
+    key: "findCell",
+    value: function findCell(x, y) {
+      var maze = this.maze;
+      for (var i = 0; i < maze.cells.length; i++) {
+        for (var j = 0; j < maze.cells[0].length; j++) {
+          var cell = maze.cells[i][j];
+          if (cell.x === x && cell.y === y) {
+            return cell;
+          }
+        }
+      }
+      return null;
+    }
+  }, {
+    key: "path",
+    value: function path() {
+      if (this.pathfinder === this.start) {
+        this.maze.solving = false;
+        this.maze.solved = true;
+      } else if (!this.pathfinder) {
+        this.pathfinder = this.finish.parent;
+      } else {
+        this.pathfinder.path = true;
+        this.pathfinder = this.pathfinder.parent;
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw(ctx) {
+      var maze = this.maze;
+      if (this.current === this.finish) {
+        this.path();
+      } else {
+        this.algorithm();
+      }
+      maze.cells.forEach(function (row) {
+        row.forEach(function (cell) {
+          cell.draw(ctx);
+        });
+      });
+      this.current.highlight(ctx);
+      this.start.highlightStart(ctx);
+      this.finish.highlightEnd(ctx);
+      ctx.strokeRect(0, 0, maze.w, maze.h);
+    }
+  }, {
+    key: "neighborExist",
+    value: function neighborExist(neighbor, list) {
+      for (var i = 0; i < list.length; i++) {
+        var cell = list[i];
+        if (cell.x === neighbor.x && cell.y === neighbor.y) {
+          return cell;
+        }
+      }
+      return false;
+    }
+  }]);
+
+  return Solver;
+}();
+
+module.exports = Solver;
 
 /***/ })
 /******/ ]);
