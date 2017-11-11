@@ -60,11 +60,205 @@
 /******/ 	__webpack_require__.p = "/dist/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Cell = __webpack_require__(2);
+
+var Generator = function () {
+  function Generator(maze) {
+    _classCallCheck(this, Generator);
+
+    this.maze = maze;
+    maze.cells = [];
+    this.createCells(maze);
+  }
+
+  _createClass(Generator, [{
+    key: 'createCells',
+    value: function createCells(maze) {
+      var rows = maze.h / maze.len;
+      var cols = maze.w / maze.len;
+      var x = void 0;
+      var y = void 0;
+
+      for (var i = 0; i < rows; i++) {
+        maze.cells[i] = [];
+        for (var j = 0; j < cols; j++) {
+          x = j * maze.len;
+          y = i * maze.len;
+          maze.cells[i].push(new Cell(x, y, maze.len));
+          maze.cells[i][j].frontier = false;
+          maze.cells[i][j].visited = false;
+        }
+      }
+    }
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      var maze = this.maze;
+      if (maze.fast === true) {
+        this.fastAlgo();
+      } else {
+        this.slowAlgo();
+      }
+      maze.cells.forEach(function (row) {
+        row.forEach(function (cell) {
+          cell.draw(ctx);
+        });
+      });
+      if (this.current) {
+        if (maze.generating) {
+          this.current.highlight(ctx);
+        }
+      }
+      ctx.strokeRect(0, 0, maze.w, maze.h);
+    }
+  }]);
+
+  return Generator;
+}();
+
+module.exports = Generator;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Solver = function () {
+  function Solver(maze) {
+    _classCallCheck(this, Solver);
+
+    this.maze = maze;
+    this.start = maze.cells[0][0];
+    this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
+  }
+
+  _createClass(Solver, [{
+    key: "adjacentCells",
+    value: function adjacentCells(cell) {
+      var maze = this.maze;
+      var inBounds = function inBounds() {
+        if (maze.x < 0 || maze.x > maze.w || maze.y < 0 || maze.y > maze.h) {
+          return false;
+        } else {
+          return true;
+        }
+      };
+
+      var neighbors = [];
+      var x = void 0;
+      var y = void 0;
+      var add = [];
+      if (!cell.walls[0]) {
+        add.push([0, -maze.len]);
+      }
+      if (!cell.walls[1]) {
+        add.push([maze.len, 0]);
+      }
+      if (!cell.walls[2]) {
+        add.push([0, maze.len]);
+      }
+      if (!cell.walls[3]) {
+        add.push([-maze.len, 0]);
+      }
+
+      for (var i = 0; i < add.length; i++) {
+        x = cell.x + add[i][0];
+        y = cell.y + add[i][1];
+        var neighborCell = this.findCell(x, y);
+        if (inBounds() && neighborCell && !neighborCell.explored) {
+          neighbors.push(neighborCell);
+        }
+      }
+      if (neighbors.length > 0) {
+        return neighbors;
+      }
+    }
+  }, {
+    key: "findCell",
+    value: function findCell(x, y) {
+      var maze = this.maze;
+      for (var i = 0; i < maze.cells.length; i++) {
+        for (var j = 0; j < maze.cells[0].length; j++) {
+          var cell = maze.cells[i][j];
+          if (cell.x === x && cell.y === y) {
+            return cell;
+          }
+        }
+      }
+      return null;
+    }
+  }, {
+    key: "path",
+    value: function path() {
+      if (this.pathfinder === this.start) {
+        this.maze.solving = false;
+        this.maze.solved = true;
+      } else if (!this.pathfinder) {
+        this.pathfinder = this.finish.parent;
+      } else {
+        this.pathfinder.path = true;
+        this.pathfinder = this.pathfinder.parent;
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw(ctx) {
+      var maze = this.maze;
+      if (this.current === this.finish) {
+        this.path();
+      } else {
+        this.algorithm();
+      }
+      maze.cells.forEach(function (row) {
+        row.forEach(function (cell) {
+          cell.draw(ctx);
+        });
+      });
+      this.current.highlight(ctx);
+      this.start.highlightStart(ctx);
+      this.finish.highlightEnd(ctx);
+      ctx.strokeRect(0, 0, maze.w, maze.h);
+    }
+  }, {
+    key: "neighborExist",
+    value: function neighborExist(neighbor, list) {
+      for (var i = 0; i < list.length; i++) {
+        var cell = list[i];
+        if (cell.x === neighbor.x && cell.y === neighbor.y) {
+          return cell;
+        }
+      }
+      return false;
+    }
+  }]);
+
+  return Solver;
+}();
+
+module.exports = Solver;
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -191,13 +385,13 @@ var Cell = function () {
 module.exports = Cell;
 
 /***/ }),
-/* 1 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var EventHandle = __webpack_require__(2);
+var EventHandle = __webpack_require__(4);
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -214,21 +408,21 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 /***/ }),
-/* 2 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var GenerateDFS = __webpack_require__(15);
-var GenerateSidewinder = __webpack_require__(16);
-var GeneratePrim = __webpack_require__(17);
-var GenerateKruskal = __webpack_require__(18);
-var SolveDFS = __webpack_require__(20);
-var SolveBFS = __webpack_require__(21);
-var SolveAStar = __webpack_require__(22);
-var SolveDijkstra = __webpack_require__(23);
-var Maze = __webpack_require__(12);
+var GenerateDFS = __webpack_require__(5);
+var GenerateSidewinder = __webpack_require__(6);
+var GeneratePrim = __webpack_require__(7);
+var GenerateKruskal = __webpack_require__(8);
+var SolveDFS = __webpack_require__(10);
+var SolveBFS = __webpack_require__(11);
+var SolveAStar = __webpack_require__(12);
+var SolveDijkstra = __webpack_require__(13);
+var Maze = __webpack_require__(14);
 
 var eventHandle = function eventHandle(ctx, canvas) {
 
@@ -362,167 +556,7 @@ var eventHandle = function eventHandle(ctx, canvas) {
 module.exports = eventHandle;
 
 /***/ }),
-/* 3 */,
-/* 4 */,
-/* 5 */,
-/* 6 */,
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */,
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Maze = function () {
-  function Maze(canvas) {
-    _classCallCheck(this, Maze);
-
-    this.w = canvas.width;
-    this.h = canvas.height;
-    this.len = 20;
-    this.ctx = canvas.getContext('2d');
-
-    this.frameRate = 1000;
-
-    this.generator;
-    this.generating;
-
-    this.solver;
-    this.solving = false;
-    this.solved = false;
-  }
-
-  _createClass(Maze, [{
-    key: "draw",
-    value: function draw() {
-      if (this.generator) {
-        this.generator.draw(this.ctx);
-      }
-    }
-  }, {
-    key: "solve",
-    value: function solve() {
-      if (this.solver) {
-        this.solver.draw(this.ctx);
-      }
-    }
-  }, {
-    key: "begin",
-    value: function begin() {
-      requestAnimationFrame(this.animate.bind(this));
-    }
-  }, {
-    key: "animate",
-    value: function animate() {
-      var _this = this;
-
-      if (this.generating || this.solving) {
-        setTimeout(function () {
-          requestAnimationFrame(_this.animate.bind(_this));
-          if (_this.generating) {
-            _this.draw();
-          }
-          if (_this.solving) {
-            _this.solve();
-          } else {
-            _this.solver = null;
-          }
-          if (!_this.generating && !_this.solving) {
-            $("button").prop("disabled", false);
-            $(".generator-btns button").removeClass("button-on");
-          }
-        }, 1000 / this.frameRate);
-      } else {
-        requestAnimationFrame(this.animate.bind(this));
-      }
-    }
-  }]);
-
-  return Maze;
-}();
-
-module.exports = Maze;
-
-/***/ }),
-/* 13 */,
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Cell = __webpack_require__(0);
-
-var Generator = function () {
-  function Generator(maze) {
-    _classCallCheck(this, Generator);
-
-    this.maze = maze;
-    maze.cells = [];
-    this.createCells(maze);
-  }
-
-  _createClass(Generator, [{
-    key: 'createCells',
-    value: function createCells(maze) {
-      var rows = maze.h / maze.len;
-      var cols = maze.w / maze.len;
-      var x = void 0;
-      var y = void 0;
-
-      for (var i = 0; i < rows; i++) {
-        maze.cells[i] = [];
-        for (var j = 0; j < cols; j++) {
-          x = j * maze.len;
-          y = i * maze.len;
-          maze.cells[i].push(new Cell(x, y, maze.len));
-          maze.cells[i][j].frontier = false;
-          maze.cells[i][j].visited = false;
-        }
-      }
-    }
-  }, {
-    key: 'draw',
-    value: function draw(ctx) {
-      var maze = this.maze;
-      if (maze.fast === true) {
-        this.fastAlgo();
-      } else {
-        this.slowAlgo();
-      }
-      maze.cells.forEach(function (row) {
-        row.forEach(function (cell) {
-          cell.draw(ctx);
-        });
-      });
-      if (this.current) {
-        if (maze.generating) {
-          this.current.highlight(ctx);
-        }
-      }
-      ctx.strokeRect(0, 0, maze.w, maze.h);
-    }
-  }]);
-
-  return Generator;
-}();
-
-module.exports = Generator;
-
-/***/ }),
-/* 15 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -536,7 +570,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Generator = __webpack_require__(14);
+var Generator = __webpack_require__(0);
 
 var GenerateDFS = function (_Generator) {
   _inherits(GenerateDFS, _Generator);
@@ -643,7 +677,7 @@ var GenerateDFS = function (_Generator) {
 module.exports = GenerateDFS;
 
 /***/ }),
-/* 16 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -657,7 +691,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Generator = __webpack_require__(14);
+var Generator = __webpack_require__(0);
 
 var GenerateSidewinder = function (_Generator) {
   _inherits(GenerateSidewinder, _Generator);
@@ -734,7 +768,7 @@ var GenerateSidewinder = function (_Generator) {
 module.exports = GenerateSidewinder;
 
 /***/ }),
-/* 17 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -748,7 +782,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Generator = __webpack_require__(14);
+var Generator = __webpack_require__(0);
 
 var GeneratePrim = function (_Generator) {
   _inherits(GeneratePrim, _Generator);
@@ -885,7 +919,7 @@ var GeneratePrim = function (_Generator) {
 module.exports = GeneratePrim;
 
 /***/ }),
-/* 18 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -899,9 +933,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Tree = __webpack_require__(19);
-var Cell = __webpack_require__(0);
-var Generator = __webpack_require__(14);
+var Tree = __webpack_require__(9);
+var Cell = __webpack_require__(2);
+var Generator = __webpack_require__(0);
 
 var GenerateKruskal = function (_Generator) {
   _inherits(GenerateKruskal, _Generator);
@@ -1027,7 +1061,7 @@ var GenerateKruskal = function (_Generator) {
 module.exports = GenerateKruskal;
 
 /***/ }),
-/* 19 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1067,7 +1101,7 @@ var Tree = function () {
 module.exports = Tree;
 
 /***/ }),
-/* 20 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1081,7 +1115,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Solver = __webpack_require__(24);
+var Solver = __webpack_require__(1);
 
 var SolveDFS = function (_Solver) {
   _inherits(SolveDFS, _Solver);
@@ -1132,7 +1166,7 @@ var SolveDFS = function (_Solver) {
 module.exports = SolveDFS;
 
 /***/ }),
-/* 21 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1146,7 +1180,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Solver = __webpack_require__(24);
+var Solver = __webpack_require__(1);
 
 var SolveBFS = function (_Solver) {
   _inherits(SolveBFS, _Solver);
@@ -1188,7 +1222,7 @@ var SolveBFS = function (_Solver) {
 module.exports = SolveBFS;
 
 /***/ }),
-/* 22 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1202,7 +1236,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Solver = __webpack_require__(24);
+var Solver = __webpack_require__(1);
 
 var SolveAStar = function (_Solver) {
   _inherits(SolveAStar, _Solver);
@@ -1272,7 +1306,7 @@ var SolveAStar = function (_Solver) {
 module.exports = SolveAStar;
 
 /***/ }),
-/* 23 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1286,7 +1320,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Solver = __webpack_require__(24);
+var Solver = __webpack_require__(1);
 
 var SolveDijkstra = function (_Solver) {
   _inherits(SolveDijkstra, _Solver);
@@ -1346,7 +1380,7 @@ var SolveDijkstra = function (_Solver) {
 module.exports = SolveDijkstra;
 
 /***/ }),
-/* 24 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1356,119 +1390,75 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Solver = function () {
-  function Solver(maze) {
-    _classCallCheck(this, Solver);
+var Maze = function () {
+  function Maze(canvas) {
+    _classCallCheck(this, Maze);
 
-    this.maze = maze;
-    this.start = maze.cells[0][0];
-    this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
+    this.w = canvas.width;
+    this.h = canvas.height;
+    this.len = 20;
+    this.ctx = canvas.getContext('2d');
+
+    this.frameRate = 1000;
+
+    this.generator;
+    this.generating;
+
+    this.solver;
+    this.solving = false;
+    this.solved = false;
   }
 
-  _createClass(Solver, [{
-    key: "adjacentCells",
-    value: function adjacentCells(cell) {
-      var maze = this.maze;
-      var inBounds = function inBounds() {
-        if (maze.x < 0 || maze.x > maze.w || maze.y < 0 || maze.y > maze.h) {
-          return false;
-        } else {
-          return true;
-        }
-      };
-
-      var neighbors = [];
-      var x = void 0;
-      var y = void 0;
-      var add = [];
-      if (!cell.walls[0]) {
-        add.push([0, -maze.len]);
-      }
-      if (!cell.walls[1]) {
-        add.push([maze.len, 0]);
-      }
-      if (!cell.walls[2]) {
-        add.push([0, maze.len]);
-      }
-      if (!cell.walls[3]) {
-        add.push([-maze.len, 0]);
-      }
-
-      for (var i = 0; i < add.length; i++) {
-        x = cell.x + add[i][0];
-        y = cell.y + add[i][1];
-        var neighborCell = this.findCell(x, y);
-        if (inBounds() && neighborCell && !neighborCell.explored) {
-          neighbors.push(neighborCell);
-        }
-      }
-      if (neighbors.length > 0) {
-        return neighbors;
-      }
-    }
-  }, {
-    key: "findCell",
-    value: function findCell(x, y) {
-      var maze = this.maze;
-      for (var i = 0; i < maze.cells.length; i++) {
-        for (var j = 0; j < maze.cells[0].length; j++) {
-          var cell = maze.cells[i][j];
-          if (cell.x === x && cell.y === y) {
-            return cell;
-          }
-        }
-      }
-      return null;
-    }
-  }, {
-    key: "path",
-    value: function path() {
-      if (this.pathfinder === this.start) {
-        this.maze.solving = false;
-        this.maze.solved = true;
-      } else if (!this.pathfinder) {
-        this.pathfinder = this.finish.parent;
-      } else {
-        this.pathfinder.path = true;
-        this.pathfinder = this.pathfinder.parent;
-      }
-    }
-  }, {
+  _createClass(Maze, [{
     key: "draw",
-    value: function draw(ctx) {
-      var maze = this.maze;
-      if (this.current === this.finish) {
-        this.path();
-      } else {
-        this.algorithm();
+    value: function draw() {
+      if (this.generator) {
+        this.generator.draw(this.ctx);
       }
-      maze.cells.forEach(function (row) {
-        row.forEach(function (cell) {
-          cell.draw(ctx);
-        });
-      });
-      this.current.highlight(ctx);
-      this.start.highlightStart(ctx);
-      this.finish.highlightEnd(ctx);
-      ctx.strokeRect(0, 0, maze.w, maze.h);
     }
   }, {
-    key: "neighborExist",
-    value: function neighborExist(neighbor, list) {
-      for (var i = 0; i < list.length; i++) {
-        var cell = list[i];
-        if (cell.x === neighbor.x && cell.y === neighbor.y) {
-          return cell;
-        }
+    key: "solve",
+    value: function solve() {
+      if (this.solver) {
+        this.solver.draw(this.ctx);
       }
-      return false;
+    }
+  }, {
+    key: "begin",
+    value: function begin() {
+      requestAnimationFrame(this.animate.bind(this));
+    }
+  }, {
+    key: "animate",
+    value: function animate() {
+      var _this = this;
+
+      if (this.generating || this.solving) {
+        setTimeout(function () {
+          requestAnimationFrame(_this.animate.bind(_this));
+          if (_this.generating) {
+            _this.draw();
+          }
+          if (_this.solving) {
+            _this.solve();
+          } else {
+            _this.solver = null;
+          }
+          if (!_this.generating && !_this.solving) {
+            $("button").prop("disabled", false);
+            $(".generator-btns button").removeClass("button-on");
+          }
+        }, 1000 / this.frameRate);
+      } else {
+        requestAnimationFrame(this.animate.bind(this));
+      }
     }
   }]);
 
-  return Solver;
+  return Maze;
 }();
 
-module.exports = Solver;
+module.exports = Maze;
 
 /***/ })
 /******/ ]);

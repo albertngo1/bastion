@@ -1,5 +1,5 @@
 {
-  "name": "maezr",
+  "name": "bastion",
   "version": "1.0.0",
   "description": "maze generation and solving",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/albertngo1/maezr.git"
+    "url": "git://github.com/albertngo1/bastion.git"
   },
   "keywords": [],
   "author": "",

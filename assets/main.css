@@ -3,6 +3,10 @@
   cursor: default;
   font-weight: bolder;
   font-size: 70px;
+  position: fixed;
+  top: -6px;
+  left: 20px;
+  clear: both;
 }
 
 #name {
@@ -22,6 +26,8 @@ section {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin: 0 auto;
+  margin-left: 100px;
 }
 body {
   display: flex;
@@ -53,13 +59,19 @@ body {
 }
 
 #informational-box {
-  margin-right: 50px;
-  margin-left: 100px;
+  margin-top: 30px;
+  margin-left: 80px;
   border: 4px solid black;
   max-width: 230px;
   padding: 3px;
   border-radius: 3px;
-  max-height: 520px;
+  max-height: 480px;
+  position: relative;
+}
+
+#body-wrapper {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .title-wrapper {
@@ -68,6 +80,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   margin-right: 3%;
+  min-width: 200px;
 }
 
 .generator-btns {
@@ -93,6 +106,9 @@ footer {
   justify-content: flex-start;
   align-items: flex-end;
   margin-bottom: 10px;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
 }
 ul {
   display: flex;
