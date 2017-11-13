@@ -62,6 +62,7 @@ class GenerateDFS extends Generator {
       this.current.removeWalls(next);
       this.current = next;
     } else if (this.stack.length > 0) {
+      this.current.backtrack = true;
       this.current = this.stack.pop();
       if (this.start === this.current) {
         maze.generating = false;
@@ -79,6 +80,7 @@ class GenerateDFS extends Generator {
         this.current.removeWalls(next);
         this.current = next;
       } else if (this.stack.length > 0) {
+        this.current.backtrack = true;
         this.current = this.stack.pop();
         if (this.start === this.current) {
           maze.generating = false;
