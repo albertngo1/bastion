@@ -456,6 +456,7 @@ var eventHandle = function eventHandle(ctx, canvas) {
         cell.frontier = false;
         cell.explored = false;
         cell.path = false;
+        cell.backtrack = false;
       });
     });
   }
