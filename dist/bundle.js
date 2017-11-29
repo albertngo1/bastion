@@ -309,7 +309,7 @@ var Cell = function () {
       var x = this.x;
       var y = this.y;
       ctx.strokeStyle = "black";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 3;
 
       if (this.walls[0]) {
         ctx.beginPath();
@@ -337,32 +337,32 @@ var Cell = function () {
       }
 
       if (this.visited) {
-        ctx.fillStyle = "pink";
+        ctx.fillStyle = "white";
         ctx.fillRect(x, y, this.len, this.len);
       } else if (this.frontier) {
-        ctx.fillStyle = "teal";
+        ctx.fillStyle = "blue";
         ctx.fillRect(x, y, this.len, this.len);
       } else {
         ctx.fillStyle = "black";
         ctx.fillRect(x, y, this.len, this.len);
       }
       if (this.backtrack) {
-        ctx.fillStyle = "rgb(230, 147, 49)";
+        ctx.fillStyle = "rgb(191, 62, 230)";
         ctx.fillRect(x, y, this.len, this.len);
       } else if (this.explored) {
-        ctx.fillStyle = "rgb(221, 56, 199)";
+        ctx.fillStyle = "pink";
         ctx.fillRect(x, y, this.len, this.len);
       }
 
       if (this.path) {
-        ctx.fillStyle = "#64fbee";
+        ctx.fillStyle = "yellow";
         ctx.fillRect(x, y, this.len, this.len);
       }
     }
   }, {
     key: "highlight",
     value: function highlight(ctx) {
-      ctx.fillStyle = "white";
+      ctx.fillStyle = "black";
       ctx.fillRect(this.x, this.y, this.len, this.len);
     }
   }, {
@@ -426,27 +426,27 @@ var Maze = __webpack_require__(14);
 
 var eventHandle = function eventHandle(ctx, canvas) {
 
-  var maezr = new Maze(canvas);
+  var bastion = new Maze(canvas);
   var gen = void 0;
   var solve = void 0;
 
   function eventHelper() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     $("button").prop("disabled", true);
-    if (maezr) {
-      maezr = new Maze(canvas);
+    if (bastion) {
+      bastion = new Maze(canvas);
     }
-    maezr.solver = null;
-    maezr.solved = false;
-    maezr.solving = false;
-    maezr.generating = true;
+    bastion.solver = null;
+    bastion.solved = false;
+    bastion.solving = false;
+    bastion.generating = true;
   }
 
-  function fastAlgoHelper(maezr) {
+  function fastAlgoHelper(bastion) {
     var txt = $("#instant-toggle-text").text();
 
     if (txt === "ON") {
-      maezr.fast = true;
+      bastion.fast = true;
     }
   }
 
@@ -479,77 +479,77 @@ var eventHandle = function eventHandle(ctx, canvas) {
 
   $("#dfs-gen").click(function () {
     eventHelper();
-    gen = new GenerateDFS(maezr);
-    maezr.generator = gen;
-    fastAlgoHelper(maezr);
+    gen = new GenerateDFS(bastion);
+    bastion.generator = gen;
+    fastAlgoHelper(bastion);
     $("#dfs-gen").addClass("button-on");
-    maezr.begin();
+    bastion.begin();
   });
 
   $("#prim-gen").click(function () {
     eventHelper();
-    gen = new GeneratePrim(maezr);
-    maezr.generator = gen;
-    fastAlgoHelper(maezr);
+    gen = new GeneratePrim(bastion);
+    bastion.generator = gen;
+    fastAlgoHelper(bastion);
     $("#prim-gen").addClass("button-on");
-    maezr.begin();
+    bastion.begin();
   });
 
   $("#sidewinder-gen").click(function () {
     eventHelper();
-    gen = new GenerateSidewinder(maezr);
-    maezr.generator = gen;
-    fastAlgoHelper(maezr);
+    gen = new GenerateSidewinder(bastion);
+    bastion.generator = gen;
+    fastAlgoHelper(bastion);
     $("#sidewinder-gen").addClass("button-on");
-    maezr.begin();
+    bastion.begin();
   });
 
   $("#kruskal-gen").click(function () {
     eventHelper();
-    gen = new GenerateKruskal(maezr);
-    maezr.generator = gen;
-    fastAlgoHelper(maezr);
+    gen = new GenerateKruskal(bastion);
+    bastion.generator = gen;
+    fastAlgoHelper(bastion);
     $("#kruskal-gen").addClass("button-on");
-    maezr.begin();
+    bastion.begin();
   });
 
   $("#dfs-solve").click(function () {
-    if (maezr.generator) {
-      if (maezr.solved) {
-        resetMaze(maezr);
+    if (bastion.generator) {
+      if (bastion.solved) {
+        resetMaze(bastion);
       }
-      solve = new SolveDFS(maezr);
-      solveHelper(maezr, "#dfs-solve");
+      solve = new SolveDFS(bastion);
+      solveHelper(bastion, "#dfs-solve");
     }
   });
 
   $("#bfs-solve").click(function () {
-    if (maezr.generator) {
-      if (maezr.solved) {
-        resetMaze(maezr);
+    if (bastion.generator) {
+      if (bastion.solved) {
+        resetMaze(bastion);
       }
-      solve = new SolveBFS(maezr);
-      solveHelper(maezr, "#bfs-solve");
+      solve = new SolveBFS(bastion);
+      solveHelper(bastion, "#bfs-solve");
     }
   });
 
   $("#astar-solve").click(function () {
-    if (maezr.generator) {
-      if (maezr.solved) {
-        resetMaze(maezr);
+    if (bastion.generator) {
+      if (bastion.solved) {
+        resetMaze(bastion);
       }
-      solve = new SolveAStar(maezr);
-      solveHelper(maezr, "#astar-solve");
+      solve = new SolveAStar(bastion);
+      solveHelper(bastion, "#astar-solve");
     }
   });
 
   $("#dijkstra-solve").click(function () {
-    if (maezr.generator) {
-      if (maezr.solved) {
-        resetMaze(maezr);
+    if (bastion.generator) {
+      if (bastion.solved) {
+        resetMaze(bastion);
       }
-      solve = new SolveDijkstra(maezr);
-      solveHelper(maezr, "#dijkstra-solve");
+      solve = new SolveDijkstra(bastion);
+      solveHelper(bastion, "#dijkstra-solve");
     }
   });
 };
@@ -1449,7 +1449,7 @@ var Maze = function () {
             $("button").prop("disabled", false);
             $(".generator-btns button").removeClass("button-on");
           }
-        }, 1000 / this.frameRate);
+        }, .0001);
       } else {
         requestAnimationFrame(this.animate.bind(this));
       }

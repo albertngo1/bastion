@@ -33,10 +33,10 @@ class Cell {
   }
 
   draw(ctx) {
-    const x = this.x
-    const y = this.y
+    const x = this.x;
+    const y = this.y;
     ctx.strokeStyle = "black";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
 
     if (this.walls[0]) {
       ctx.beginPath();
@@ -64,31 +64,31 @@ class Cell {
     }
 
     if (this.visited) {
-      ctx.fillStyle = "pink";
+      ctx.fillStyle = "white";
       ctx.fillRect(x, y, this.len, this.len);
     } else if (this.frontier) {
-      ctx.fillStyle = "teal";
+      ctx.fillStyle = "blue";
       ctx.fillRect(x, y, this.len, this.len);
     } else {
        ctx.fillStyle = "black";
        ctx.fillRect(x, y, this.len, this.len);
     }
     if (this.backtrack) {
-      ctx.fillStyle = "rgb(230, 147, 49)";
+      ctx.fillStyle = "rgb(191, 62, 230)";
       ctx.fillRect(x, y, this.len, this.len);
     } else if (this.explored) {
-      ctx.fillStyle = "rgb(221, 56, 199)";
+      ctx.fillStyle = "pink";
       ctx.fillRect(x, y, this.len, this.len);
     }
 
     if (this.path) {
-      ctx.fillStyle = "#64fbee";
+      ctx.fillStyle = "yellow";
       ctx.fillRect(x, y, this.len, this.len);
     }
   }
 
   highlight(ctx) {
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "black";
     ctx.fillRect(this.x, this.y, this.len, this.len);
   }
 

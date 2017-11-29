@@ -48,7 +48,7 @@ class Maze {
           $("button").prop("disabled", false);
           $(".generator-btns button").removeClass("button-on");
         }
-      }, 1000 / this.frameRate)
+      }, .0001)
     } else {
       requestAnimationFrame(this.animate.bind(this));
     }

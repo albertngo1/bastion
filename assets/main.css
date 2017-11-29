@@ -7,6 +7,7 @@
   top: -6px;
   left: 20px;
   clear: both;
+  text-shadow: 2px 2px black;
 }
 
 #name {
@@ -14,11 +15,12 @@
 }
 
 #maze-gen-title {
-  text-decoration: underline;
   font-size: 17px;
   user-select: none;
   font-weight: bolder;
   cursor: default;
+  color: rgb(255, 255, 255);
+  text-shadow: 1px 1px black;
 }
 
 section {
@@ -33,9 +35,11 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  color: white;
   height: 100%;
   width: 100%;
   font-family: 'Roboto';
+  background-color: rgb(130, 130, 130);
 }
 
 .section-wrap {
@@ -59,10 +63,12 @@ body {
 }
 
 #informational-box {
+  color: black;
+  background-color: white;
   margin-top: 30px;
   margin-left: 80px;
   border: 4px solid black;
-  max-width: 230px;
+  width: 230px;
   padding: 3px;
   border-radius: 3px;
   max-height: 480px;
@@ -96,6 +102,8 @@ body {
   padding: 3px;
   border-radius: 3px;
   user-select: none;
+  background-color: white;
+  color: black;
 }
 .generator-btns > button:hover {
   background-color: rgb(212, 212, 212);
@@ -123,9 +131,15 @@ ul > li {
   display: flex;
   justify-content: center;
   user-select: none;
+  background-color: white;
+  color: black;
 }
 ul > li:hover {
   background-color: rgb(212, 212, 212);
+}
+
+ul i {
+  color: white;
 }
 
 footer div {
