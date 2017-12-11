@@ -2,6 +2,8 @@
 
 [Live](https://albertngo1.github.io/bastion/)
 
+Featured [Here](http://www.microsiervos.com/archivo/ordenadores/algoritmos-resolucion-laberintos-accion.html)
+
 ## Background
 `Bastion` is a JavaScript visualization project that utilizes many popular graph algorithms to generate and solve mazes.
 
