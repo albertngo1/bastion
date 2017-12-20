@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
     context: __dirname,
@@ -8,6 +9,10 @@ module.exports = {
         publicPath: "/dist/",
         filename: "bundle.js"
     },
+    plugins: [
+        new webpack.optimize.UglifyJsPlugin(),
+        new webpack.optimize.AggressiveMergingPlugin(),
+    ],
     devtool: "source-map",
     module: {
         rules: [
@@ -15,7 +20,8 @@ module.exports = {
               test: [/\.js$/],
               exclude: [/node_modules/],
               loader: 'babel-loader',
-              options: { presets: ['es2015'] }
+              options: { presets: ['es2015'] },
+              exclude: /node_modules(?!\/webpack-dev-server)/,
             }
         ]
     }
