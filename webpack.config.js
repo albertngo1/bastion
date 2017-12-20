@@ -8,6 +8,10 @@ module.exports = {
         publicPath: "/dist/",
         filename: "bundle.js"
     },
+    plugins: [
+        new webpack.optimize.UglifyJsPlugin(),
+        new webpack.optimize.AggressiveMergingPlugin(),
+    ],
     devtool: "source-map",
     module: {
         rules: [
