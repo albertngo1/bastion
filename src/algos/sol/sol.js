@@ -1,12 +1,8 @@
-
-
 class Solver {
-
   constructor(maze) {
     this.maze = maze;
     this.start = maze.cells[0][0];
     this.finish = maze.cells[maze.cells[0].length - 1][maze.cells.length - 1];
-
   }
 
   adjacentCells(cell) {
@@ -17,23 +13,23 @@ class Solver {
         } else {
           return true;
         }
-      }
+      };
 
     let neighbors = [];
     let x;
     let y;
     const add = [];
     if (!cell.walls[0]) {
-      add.push([0, -maze.len])
+      add.push([0, -maze.len]);
     }
     if (!cell.walls[1]) {
-      add.push([maze.len, 0])
+      add.push([maze.len, 0]);
     }
     if (!cell.walls[2]) {
-      add.push([0, maze.len])
+      add.push([0, maze.len]);
     }
     if (!cell.walls[3]) {
-      add.push([-maze.len, 0])
+      add.push([-maze.len, 0]);
     }
 
     for (let i=0; i < add.length; i++) {
@@ -50,7 +46,7 @@ class Solver {
   }
 
   findCell(x, y) {
-    const maze = this.maze
+    const maze = this.maze;
     for (let i=0; i < maze.cells.length; i++) {
       for (let j=0; j < maze.cells[0].length; j++) {
         let cell = maze.cells[i][j];
@@ -61,8 +57,6 @@ class Solver {
     }
     return null;
   }
-
-
 
   path() {
     if (this.pathfinder === this.start) {
@@ -103,8 +97,6 @@ class Solver {
     }
     return false;
   }
-
 }
 
-
-module.exports = Solver;
+export default Solver;

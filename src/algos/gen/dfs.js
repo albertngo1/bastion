@@ -1,16 +1,14 @@
-const Generator = require('./generator.js');
+import Generator from './generator.js';
 
 class GenerateDFS extends Generator {
-
   constructor(maze) {
     super(maze);
-    const y = Math.floor(Math.random() * maze.cells.length)
-    const x = Math.floor(Math.random() * maze.cells[0].length)
+    const y = Math.floor(Math.random() * maze.cells.length);
+    const x = Math.floor(Math.random() * maze.cells[0].length);
     this.current = maze.cells[y][x];
     this.current.visited = true;
     this.stack = [];
     this.start = this.current;
-
   }
 
   adjacentCells(cell) {
@@ -21,7 +19,7 @@ class GenerateDFS extends Generator {
         } else {
           return true;
         }
-      }
+      };
     let neighbors = [];
     let x;
     let y;
@@ -41,7 +39,7 @@ class GenerateDFS extends Generator {
   }
 
   findCell(x, y) {
-    const maze = this.maze
+    const maze = this.maze;
     for (let i=0; i < maze.cells.length; i++) {
       for (let j=0; j < maze.cells[0].length; j++) {
         let cell = maze.cells[i][j];
@@ -87,8 +85,6 @@ class GenerateDFS extends Generator {
       }
     }
   }
-
-
 }
 
-module.exports = GenerateDFS;
+export default GenerateDFS;

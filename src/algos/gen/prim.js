@@ -1,12 +1,10 @@
-const Generator = require('./generator.js');
+import Generator from './generator.js';
 
 class GeneratePrim extends Generator {
-
   constructor(maze) {
     super(maze);
 
     this.frontier = [];
-
     const row = maze.cells.length;
     const cols = maze.cells[0].length;
     this.mark(Math.floor(Math.random() * cols), Math.floor(Math.random() * row));
@@ -16,7 +14,7 @@ class GeneratePrim extends Generator {
     const maze = this.maze;
     if (x >= 0 && y >= 0 && x < maze.cells[0].length && y < maze.cells.length && maze.cells[y][x].frontier === false && maze.cells[y][x].visited === false) {
       maze.cells[y][x].frontier = true;
-      this.frontier.push([x, y])
+      this.frontier.push([x, y]);
     }
   }
 
@@ -50,16 +48,16 @@ class GeneratePrim extends Generator {
 
     if (x > 0 && maze.cells[y][x-1].visited) {
       neighbors.push([x - 1, y]);
-    };
+    }
     if (x + 1 < maze.cells[0].length && maze.cells[y][x+1].visited) {
       neighbors.push([x + 1, y]);
-    };
+    }
     if (y > 0 && maze.cells[y - 1][x].visited) {
       neighbors.push([x, y - 1]);
-    };
+    }
     if (y + 1 < maze.cells.length && maze.cells[y + 1][x].visited) {
       neighbors.push([x, y + 1]);
-    };
+    }
 
     return neighbors;
 
@@ -115,9 +113,7 @@ class GeneratePrim extends Generator {
       this.algorithm();
     }
     maze.generating = false;
-
   }
-
 }
 
-module.exports = GeneratePrim;
+export default GeneratePrim;

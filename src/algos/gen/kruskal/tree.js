@@ -12,9 +12,9 @@ class Tree {
   }
 
   connect(tree) {
-    return tree.root().parent = this;
+    return (tree.root().parent = this);
   }
 
 }
 
-module.exports = Tree;
+export default Tree;

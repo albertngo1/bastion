@@ -1,11 +1,10 @@
-const Generator = require('./generator.js');
+import Generator from './generator.js';
 
 class GenerateSidewinder extends Generator {
-
   constructor(maze) {
     super(maze);
 
-    this.currentIdx = {x: 0, y: 0}
+    this.currentIdx = { x: 0, y: 0 };
     this.runStart = 0;
   }
 
@@ -18,7 +17,7 @@ class GenerateSidewinder extends Generator {
         this.currentIdx.x = 0;
         this.currentIdx.y += 1;
         if (this.currentIdx.y === height) {
-          return this.maze.generating = false;
+          return (this.maze.generating = false);
         }
       }
       let x = this.currentIdx.x;
@@ -60,8 +59,6 @@ class GenerateSidewinder extends Generator {
     }
     maze.generating = false;
   }
-
-
 }
 
-module.exports = GenerateSidewinder;
+export default GenerateSidewinder;

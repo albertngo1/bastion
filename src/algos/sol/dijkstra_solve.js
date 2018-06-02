@@ -1,8 +1,6 @@
-const Solver = require('./sol.js');
-
+import Solver from './sol.js';
 
 class SolveDijkstra extends Solver {
-
   constructor(maze) {
     super(maze);
 
@@ -12,8 +10,8 @@ class SolveDijkstra extends Solver {
         cell.distance = 1/0;
         cell.parent = null;
         this.set.push(cell);
-      })
-    })
+      });
+    });
 
     this.start.distance = 0;
   }
@@ -28,10 +26,10 @@ class SolveDijkstra extends Solver {
       if (neighbors) {
         neighbors.forEach(neighbor => {
           neighbor.parent = this.current;
-        })
+        });
       }
       for (let i=0; i < neighbors.length; i++) {
-        let dist = this.current.distance + Math.sqrt(Math.pow(neighbors[i].x - this.current.x, 2) + Math.pow(neighbors[i].y - this.current.y, 2))
+				const dist = this.current.distance + Math.sqrt(Math.pow(neighbors[i].x - this.current.x, 2) + Math.pow(neighbors[i].y - this.current.y, 2));
         if (dist < neighbors[i].distance) {
           neighbors[i].distance = dist;
         }
@@ -41,7 +39,6 @@ class SolveDijkstra extends Solver {
       this.maze.solved = true;
     }
   }
-
 }
 
-module.exports = SolveDijkstra;
+export default SolveDijkstra;

@@ -1,7 +1,6 @@
-const EventHandle = require('./event_handle.js');
+import EventHandle from './event_handle.js';
 
 document.addEventListener("DOMContentLoaded", () => {
-
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext('2d');
 
@@ -12,5 +11,4 @@ document.addEventListener("DOMContentLoaded", () => {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   EventHandle(ctx, canvas);
-
-})
+});

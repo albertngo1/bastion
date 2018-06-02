@@ -1,7 +1,6 @@
-const Cell = require('../../cell.js');
+import Cell from '../../cell.js';
 
 class Generator {
-
   constructor(maze) {
     this.maze = maze;
     maze.cells = [];
@@ -17,8 +16,8 @@ class Generator {
     for (let i=0; i < rows; i++) {
       maze.cells[i] = [];
       for (let j=0; j < cols; j++) {
-        x = (j * maze.len)
-        y = (i * maze.len)
+        x = (j * maze.len);
+        y = (i * maze.len);
         maze.cells[i].push(new Cell(x, y, maze.len));
         maze.cells[i][j].frontier = false;
         maze.cells[i][j].visited = false;
@@ -45,7 +44,6 @@ class Generator {
     }
     ctx.strokeRect(0, 0, maze.w, maze.h);
   }
-
 }
 
-module.exports = Generator;
+export default Generator;

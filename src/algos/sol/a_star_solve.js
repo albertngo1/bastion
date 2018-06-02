@@ -1,7 +1,6 @@
-const Solver = require('./sol.js');
+import Solver from './sol.js';
 
 class SolveAStar extends Solver {
-
   constructor(maze) {
     super(maze);
 
@@ -23,7 +22,7 @@ class SolveAStar extends Solver {
         if (neighbors) {
           neighbors.forEach(neighbor => {
             neighbor.parent = this.current;
-          })
+          });
           for (let i=0; i < neighbors.length; i++) {
             if (neighbors[i] === this.finish) {
               this.current = neighbors[i];
@@ -34,15 +33,7 @@ class SolveAStar extends Solver {
             neighbors[i].f = neighbors[i].g + neighbors[i].h;
             const openListCell = this.neighborExist(neighbors[i], this.open);
             const closedListCell = this.neighborExist(neighbors[i], this.closed);
-            if (openListCell) {
-              if (neighbors[i].f > openListCell.f) {
-
-              }
-            } else if (closedListCell) {
-              if (neighbors[i].f > openListCell.f) {
-
-              }
-            } else {
+            if (!openListCell || !closedListCell) {
               this.open.push(neighbors[i]);
             }
             this.closed.push(this.current);
@@ -54,7 +45,6 @@ class SolveAStar extends Solver {
       this.maze.solved = true;
     }
   }
-  
 }
 
-module.exports = SolveAStar;
+export default SolveAStar;

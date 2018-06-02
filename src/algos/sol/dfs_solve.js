@@ -1,7 +1,6 @@
-const Solver = require('./sol.js');
+import Solver from './sol.js';
 
 class SolveDFS extends Solver {
-
   constructor(maze) {
     super(maze);
 
@@ -34,7 +33,6 @@ class SolveDFS extends Solver {
       this.maze.solved = true;
     }
   }
-
 }
 
-module.exports = SolveDFS;
+export default SolveDFS;

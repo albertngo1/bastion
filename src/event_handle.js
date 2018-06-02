@@ -1,16 +1,14 @@
-const GenerateDFS = require('./algos/gen/dfs.js');
-const GenerateSidewinder = require('./algos/gen/sidewinder.js');
-const GeneratePrim = require('./algos/gen/prim.js');
-const GenerateKruskal = require('./algos/gen/kruskal/kruskal.js');
-const SolveDFS = require('./algos/sol/dfs_solve.js');
-const SolveBFS = require('./algos/sol/bfs_solve.js');
-const SolveAStar = require('./algos/sol/a_star_solve.js');
-const SolveDijkstra = require('./algos/sol/dijkstra_solve.js');
-const Maze = require('./maze.js');
-
+import GenerateDFS from './algos/gen/dfs.js';
+import GenerateSidewinder from './algos/gen/sidewinder.js';
+import GeneratePrim from './algos/gen/prim.js';
+import GenerateKruskal from './algos/gen/kruskal/kruskal.js';
+import SolveDFS from './algos/sol/dfs_solve.js';
+import SolveBFS from './algos/sol/bfs_solve.js';
+import SolveAStar from './algos/sol/a_star_solve.js';
+import SolveDijkstra from './algos/sol/dijkstra_solve.js';
+import Maze from './maze.js';
 
 const eventHandle = (ctx, canvas) => {
-
   let bastion = new Maze(canvas);
   let gen;
   let solve;
@@ -27,11 +25,11 @@ const eventHandle = (ctx, canvas) => {
     bastion.generating = true;
   }
 
-  function fastAlgoHelper(bastion) {
+  function fastAlgoHelper(bastionRunner) {
     let txt = $("#instant-toggle-text").text();
 
     if (txt === "ON") {
-      bastion.fast = true;
+      bastionRunner.fast = true;
     }
   }
 
@@ -42,7 +40,7 @@ const eventHandle = (ctx, canvas) => {
         cell.explored = false;
         cell.path = false;
         cell.backtrack = false;
-      })
+      });
     });
   }
 
@@ -60,7 +58,6 @@ const eventHandle = (ctx, canvas) => {
     } else {
       $("#instant-toggle-text").text("OFF");
     }
-
   });
 
   $("#dfs-gen").click(() => {
@@ -138,9 +135,7 @@ const eventHandle = (ctx, canvas) => {
       solveHelper(bastion, "#dijkstra-solve");
     }
   });
+};
 
 
-}
-
-
-module.exports = eventHandle;
+export default eventHandle;

@@ -1,5 +1,4 @@
 class Maze {
-
   constructor(canvas) {
     this.w = canvas.width;
     this.h = canvas.height;
@@ -8,10 +7,6 @@ class Maze {
 
     this.frameRate = 1000;
 
-    this.generator;
-    this.generating;
-
-    this.solver;
     this.solving = false;
     this.solved = false;
   }
@@ -48,13 +43,11 @@ class Maze {
           $("button").prop("disabled", false);
           $(".generator-btns button").removeClass("button-on");
         }
-      }, .0001)
+      }, .0001);
     } else {
       requestAnimationFrame(this.animate.bind(this));
     }
   }
 }
 
-
-
-module.exports = Maze;
+export default Maze;

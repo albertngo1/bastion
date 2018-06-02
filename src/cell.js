@@ -1,5 +1,4 @@
 class Cell {
-
   constructor(x, y, len) {
     this.x = x;
     this.y = y;
@@ -10,9 +9,8 @@ class Cell {
   }
 
   removeWalls(other) {
-
-    let x = this.x - other.x;
-    let y = this.y - other.y;
+    const x = this.x - other.x;
+    const y = this.y - other.y;
 
     if (x < 0) {
       this.walls[1] = false;
@@ -103,4 +101,4 @@ class Cell {
 
 }
 
-module.exports = Cell;
+export default Cell;

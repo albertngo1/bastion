@@ -1,9 +1,8 @@
-const Tree = require('./tree.js');
-const Cell = require('../../../cell.js');
-const Generator = require('../generator.js');
+import Tree from './tree.js';
+import Cell from '../../../cell.js';
+import Generator from '../generator.js';
 
 class GenerateKruskal extends Generator {
-
   constructor(maze) {
     super(maze);
     this.N = "N";
@@ -13,13 +12,14 @@ class GenerateKruskal extends Generator {
       "W": -maze.len,
       "N": 0,
       "S": 0,
-    }
+		};
+
     this.DY = {
       "S": maze.len,
       "N": -maze.len,
       "W": 0,
       "E": 0,
-    }
+    };
 
     this.maze = maze;
     this.edges = [];
@@ -74,17 +74,17 @@ class GenerateKruskal extends Generator {
 
   algorithm() {
     const maze = this.maze;
-    let poppedEdge = this.edges.pop();
-    let x = poppedEdge[0];
-    let y = poppedEdge[1];
-    let dir = poppedEdge[2];
+    const poppedEdge = this.edges.pop();
+    const x = poppedEdge[0];
+    const y = poppedEdge[1];
+    const dir = poppedEdge[2];
 
-    let nx = x + this.DX[dir];
-    let ny = y + this.DY[dir];
+    const nx = x + this.DX[dir];
+    const ny = y + this.DY[dir];
 
-    let l = this.maze.len;
-    let set1 = this.sets[y / l][x / l];
-    let set2 = this.sets[ny / l][nx / l];
+    const l = this.maze.len;
+    const set1 = this.sets[y / l][x / l];
+    const set2 = this.sets[ny / l][nx / l];
     if (!set1.connected(set2)) {
 
       set1.connect(set2);
@@ -106,10 +106,7 @@ class GenerateKruskal extends Generator {
     }
     maze.cells[y / l][x/ l].visited = true;
     maze.cells[ny / l][nx/ l].visited = true;
-
   }
-
-
 }
 
-module.exports = GenerateKruskal;
+export default GenerateKruskal;
