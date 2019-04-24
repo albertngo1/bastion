@@ -15,7 +15,7 @@ class Solver {
         }
       };
 
-    let neighbors = [];
+    const neighbors = [];
     let x;
     let y;
     const add = [];
@@ -35,7 +35,7 @@ class Solver {
     for (let i=0; i < add.length; i++) {
       x = cell.x + add[i][0];
       y = cell.y + add[i][1];
-      let neighborCell = this.findCell(x, y);
+      const neighborCell = this.findCell(x, y);
       if (inBounds() && neighborCell && !neighborCell.explored) {
         neighbors.push(neighborCell);
       }

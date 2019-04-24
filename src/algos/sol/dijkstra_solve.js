@@ -17,7 +17,6 @@ class SolveDijkstra extends Solver {
   }
 
   algorithm() {
-    const maze = this.maze;
     if (this.set.length > 0) {
       this.set.sort((a,b) => b.distance - a.distance);
       this.current = this.set.pop();

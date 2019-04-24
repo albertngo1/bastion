@@ -9,7 +9,6 @@ class SolveBFS extends Solver {
   }
 
   algorithm() {
-    const maze = this.maze;
     if (this.current !== this.finish) {
       const neighbors = this.adjacentCells(this.current);
       if (neighbors) {

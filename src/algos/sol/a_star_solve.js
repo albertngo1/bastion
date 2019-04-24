@@ -12,7 +12,6 @@ class SolveAStar extends Solver {
   }
 
   algorithm() {
-    const maze = this.maze;
     if (this.current !== this.finish) {
       if (this.open.length > 0) {
         this.open.sort((a,b) => b.f - a.f);
